@@ -1,2 +1,2 @@
-# monsanto-sim
-Monsanto Simulator 2016
+# Monsanto Simulator 2016
+Currently in early development
