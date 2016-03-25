@@ -1,3 +1,6 @@
+body {
+    font-family: "Open Sans", Helvetica, sans-serif;
+}
 #top-blue {
     background-color: #367588;
     position: relative;
@@ -7,12 +10,31 @@
 #top-blue > div {
     position: absolute;
     bottom: 0;
-    line-height: 96pt;
-    font-size: 96pt;
+    font-size: 14vmin;
     line-height: 15%;
     width: 100vw;
     text-align: center;
     color: white;
-    letter-spacing: 1em;
-    font-family: "Open Sans", Helvetica, sans-serif;
+    letter-spacing: 0.8em;
+}
+#start-container{
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 55vh;
+    width: 20vw;
+    white-space: nowrap;
+}
+input, #join-or-create {
+    font-size: 2em;
+    background-color: #fff;
+    border: 0;
+}
+#room-name{
+    width: 17vw;
+}
+#join-or-create {
+    border-bottom: 1px dotted #000;
+    cursor: pointer;
 }
