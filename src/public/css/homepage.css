@@ -38,3 +38,6 @@ input, #join-or-create {
     border-bottom: 1px dotted #000;
     cursor: pointer;
 }
+button {
+    display: none;
+}

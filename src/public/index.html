@@ -9,17 +9,14 @@
     <div id='top-blue'>
         <div>MONSANTO</div>
     </div>
-    <form id='start-container' action='play' method='post'>
-        <input id='room-name' placeholder="Room Name" maxlength=20 required>
+    <form id='start-container' action='init' method='post' enctype='application/x-www-form-urlencoded'>
+        <input id='room-name' name="room" placeholder="Room Name" maxlength=20 required>
         <span id='join-or-create'>Start</span>
+        <button id="hidden-submit" type="submit"></button>
     </form>
     <script>
-        var roomField = document.getElementById('room-name');
         document.getElementById('join-or-create').addEventListener('click', function(){
-            if(roomField.validity.valid) document.getElementById('start-container').submit();
-            else if (roomField.validity.tooLong) alert('Room name maximum is 20 characters');
-            else if (roomField.validity.valueMissing) alert('Please enter a room name');
-            else roomField.setCustomValidity('something happened');
+            document.getElementById('hidden-submit').click();
         });
     </script>
 </body>

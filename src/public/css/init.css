@@ -1,0 +1,15 @@
+body {
+    background-color: #367588;
+}
+#main {
+    font-size: 5em;
+    top: 40vh;
+    left: -50%;
+    position: relative;
+    color: white;
+    font-family: "Open Sans", Helvetica, sans-serif;
+}
+#wrapper {
+    position: absolute;
+    left: 50%;
+}

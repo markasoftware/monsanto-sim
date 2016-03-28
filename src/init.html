@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monsanto Simulator</title>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'wait-player-join');
+        xhr.send();
+        xhr.addEventListener('load', function(){
+            if(xhr.status == 200)
+                location.replace('play');
+            else
+                document.write('non-200 http code from wait-player-join: ' + xhr.status);
+        });
+    </script>
+    <link rel='stylesheet' href='css/all.css'>
+    <link rel='stylesheet' href='css/init.css'>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="main">Waiting for other player...</div>
+    </div>
+</body>
+</html>

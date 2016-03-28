@@ -1,0 +1,12 @@
+body {
+    font-family: "Open Sans", Helvetica, sans-serif;
+}
+#money-container {
+    position: absolute;
+    top: 5vh;
+    left: 5vh;
+    font-size: 2em;
+}
+#money-container > img {
+    height: 2em;
+}
