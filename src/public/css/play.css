@@ -5,8 +5,22 @@ body {
     position: absolute;
     top: 5vh;
     left: 5vh;
-    font-size: 2em;
+    height: 10vh;
+    width: 10vw;
 }
 #money-container > img {
+    display: block;
     height: 2em;
+    position: absolute;
+    top: 0;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}
+#money {
+    font-size: 1.5em;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
 }
