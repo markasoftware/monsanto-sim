@@ -4,8 +4,8 @@ body {
 #money-container {
     position: absolute;
     top: 5vh;
-    left: 5vh;
-    height: 10vh;
+    left: 4vw;
+    height: 7vh;
     width: 10vw;
 }
 #money-container > img {
@@ -23,4 +23,30 @@ body {
     bottom: 0;
     text-align: center;
     width: 100%;
+}
+#side {
+    position: absolute;
+    top: 5vh;
+    right: 4vw;
+    font-size: 2.5em;
+}
+#main-container {
+    position: absolute;
+    width: 85vw;
+    height: 70vh;
+    left: 7.5vw;
+    bottom: 0;
+}
+#selector-icon-container {
+    position: absolute;
+}
+#selector-icon-container > img {
+    height: 4em;
+    padding: 0.3em;
+}
+#selector-box {
+    position: absolute;
+    width: 4.6em;
+    height: 4.6em;
+    transition: left 200ms ease-in-out;
 }

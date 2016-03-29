@@ -8,10 +8,12 @@ var fs = require('fs');
 //prepare the thingies
 var playFile = fs.readFileSync('./play.html', 'utf8');
 var playFileMonsanto = mustache.render(playFile, {
-    side: 'monsanto'
+    side: 'monsanto',
+    specialimg: 'crop'
 });
 var playFileOpposition = mustache.render(playFile, {
-    side: 'opposition'
+    side: 'opposition',
+    specialimg: 'farmer'
 });
 
 var games = {};

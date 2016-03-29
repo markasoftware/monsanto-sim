@@ -5,10 +5,25 @@
     <link rel='stylesheet' href='css/all.css'>
     <link rel='stylesheet' href='css/play.css'>
     <link rel='stylesheet' href='css/{{side}}.css'>
+    <script src='scripts/section-controller.js' async defer></script>
 </head>
 <body>
     <div id='money-container'>
         <img src='images/money.svg'>
         <div id='money'>0000</div>
+    </div>
+    <div id='side'>{{side}}</div>
+    <div id='main-container'>
+        <div id='selector-container'>
+            <div id='selector-icon-container'>
+                <!--it's like this to avoid it thinking there are spaces between the elements-->
+                <img src='images/{{specialimg}}.svg'
+                ><img src='images/lawyer.svg'
+                ><img src='images/soldier.svg'
+                ><img src='images/scientist.svg'>
+            </div>
+            <div id='selector-box'></div>
+        </div>
+    </div>
 </body>
 </html>
