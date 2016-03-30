@@ -1,3 +1,4 @@
+//this is released under GPLv3 or something
 var express = require('express');
 var session = require('express-session');
 var nedbStore = require('nedb-session-store')(session);
