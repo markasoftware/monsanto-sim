@@ -37,8 +37,9 @@ body {
     left: 7.5vw;
     bottom: 0;
 }
-#selector-icon-container {
+#selector-container {
     position: absolute;
+    left: calc(42.5vw - 9.2em);
 }
 #selector-icon-container > img {
     height: 4em;
@@ -48,5 +49,6 @@ body {
     position: absolute;
     width: 4.6em;
     height: 4.6em;
-    transition: left 200ms ease-in-out;
+    top: 0;
+    transition: margin-left 200ms ease-in-out;
 }
