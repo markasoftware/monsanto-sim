@@ -59,7 +59,7 @@ app.post('/init', function(req, res){
         
         room.playerJoined();
 
-        res.redirect('/play');
+        res.redirect('play');
     }
     
     games[roomName] = room;
