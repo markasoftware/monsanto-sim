@@ -7,7 +7,9 @@ img {
     filter: invert(1);
 }
 #selector-box {
-    border: 2px solid white;
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
     border-bottom: 2px solid #367588;
 }
 #dna-container {
