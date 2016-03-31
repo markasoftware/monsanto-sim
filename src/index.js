@@ -31,7 +31,6 @@ app.use(session({
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/init', function(req, res){
-    req.session = {};
     var sess = req.session;
     var roomName = req.body.room;
     sess.room = roomName;
