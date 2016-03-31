@@ -33,22 +33,29 @@ body {
 #main-container {
     position: absolute;
     width: 85vw;
-    height: 70vh;
+    height: 85vh;
     left: 7.5vw;
     bottom: 0;
 }
 #selector-container {
     position: absolute;
-    left: calc(42.5vw - 9.2em);
+    left: calc(42.5vw - 18vh);
 }
 #selector-icon-container > img {
-    height: 4em;
-    padding: 0.3em;
+    height: 7vh;
+    padding: 1vh;
 }
 #selector-box {
     position: absolute;
-    width: 4.6em;
-    height: 4.6em;
-    top: 0;
+    width: 9vh;
+    height: 9vh;
+    top: -2px;
     transition: margin-left 200ms ease-in-out;
+    z-index: 100;
+}
+#dna-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: calc(76vh - 2px);
 }
