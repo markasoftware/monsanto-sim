@@ -7,15 +7,14 @@ var mustache = require('mustache');
 var fs = require('fs');
 
 //prepare the thingies
-var playFile = fs.readFileSync('./play.html', 'utf8');
-var playFileMonsanto = mustache.render(playFile, {
+var monsantoView = {
     side: 'monsanto',
     specialimg: 'crop'
-});
-var playFileOpposition = mustache.render(playFile, {
+};
+var oppositionView =  {
     side: 'opposition',
     specialimg: 'farmer'
-});
+};
 
 var games = {};
 
@@ -32,6 +31,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/init', function(req, res){
+    req.session = {};
     var sess = req.session;
     var roomName = req.body.room;
     sess.room = roomName;
@@ -69,19 +69,23 @@ app.get('/wait-player-join', function(req, res){
     var sess = req.session;
     games[sess.room].playerJoined = function(){
         delete games[sess.room].playerJoined;
-        res.send('yay');
+        res.status(200).end();
     }
 });
 
 app.get('/play', function(req, res){
     var sess = req.session;
-    res.send(sess.monsanto?playFileMonsanto:playFileOpposition);
+    var view = sess.monsanto ? monsantoView : oppositionView;
+    //generate the genes
+    //STUFF HERE LATER
+
+    fs.readFile('./play.html', 'utf8', (err, pf) => res.send(mustache.render(pf, view)).end() );
 });
 
 
 
 app.get('/get-rooms', function(req, res){
-    res.send(JSON.stringify(games));
+    res.send(games).end();
 });
 
 
