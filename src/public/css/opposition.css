@@ -2,10 +2,13 @@
     border-top: 2px solid black;
     border-left: 2px solid black;
     border-right: 2px solid black;
-    border-bottom: 2px solid white;
+    border-bottom: 2px solid #cc9900;
 }
 #dna-container {
     border-top: 2px solid black;
     border-left: 2px solid black;
     border-right: 2px solid black;
+}
+body {
+    background-color: #cc9900;
 }
