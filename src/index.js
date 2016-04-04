@@ -5,20 +5,20 @@ var nedbStore = require('nedb-session-store')(session);
 var bodyParser = require('body-parser');
 var mustache = require('mustache');
 var fs = require('fs');
+var app = express();
+require('express-ws')(app);
 
 //prepare the thingies
 var monsantoView = {
     side: 'monsanto',
-    specialimg: 'crop'
+    specialImg: 'crop'
 };
 var oppositionView =  {
     side: 'opposition',
-    specialimg: 'farmer'
+    specialImg: 'farmer'
 };
 
 var games = {};
-
-var app = express();
 
 app.use(express.static('public'));
 app.use(session({
@@ -42,19 +42,18 @@ app.post('/init', function(req, res){
         var isMonsanto = !!Math.round(Math.random());
         sess.monsanto = isMonsanto;
         room = {
-            monsanto: isMonsanto?sess.id:null,
-            opposition: isMonsanto?null:sess.id
+            monsantoJoined: !isMonsanto
         };
 
         res.sendFile('init.html',{root: __dirname});
     } else {
-        if(room.monsanto){
-            room.opposition = sess.id;
+        if(room.monsantoJoined){
             sess.monsanto = false;
         } else {
-            room.monsanto = sess.id;
             sess.monsanto = true;
         }
+
+        delete room.monsantoJoined;
         
         room.playerJoined();
 
@@ -75,9 +74,6 @@ app.get('/wait-player-join', function(req, res){
 app.get('/play', function(req, res){
     var sess = req.session;
     var view = sess.monsanto ? monsantoView : oppositionView;
-    //generate the genes
-    //STUFF HERE LATER
-
     fs.readFile('./play.html', 'utf8', (err, pf) => res.send(mustache.render(pf, view)).end() );
 });
 
