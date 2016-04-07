@@ -50,7 +50,7 @@ body {
     position: absolute;
     width: 9vh;
     height: 9vh;
-    top: 0;
+    top: 2px;
     box-sizing: border-box;
     transition: margin-left 200ms ease-in-out;
     z-index: 100;
