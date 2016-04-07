@@ -5,9 +5,9 @@
   "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "chance": "^1.0.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
-    "express-ws": "^1.0.0",
     "mustache": "^2.2.1",
     "nedb-session-store": "^1.1.1"
   }

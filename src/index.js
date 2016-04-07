@@ -5,8 +5,10 @@ var nedbStore = require('nedb-session-store')(session);
 var bodyParser = require('body-parser');
 var mustache = require('mustache');
 var fs = require('fs');
+var chance = new (require('chance'))();
 var app = express();
-require('express-ws')(app);
+
+var logic = require('./logic.js');
 
 //prepare the thingies
 var monsantoView = {
@@ -30,6 +32,8 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(require('./ajax.js'));
+
 app.post('/init', function(req, res){
     var sess = req.session;
     var roomName = req.body.room;
@@ -39,23 +43,40 @@ app.post('/init', function(req, res){
 
     if(!room){
         //monsanto or opposition?
-        var isMonsanto = !!Math.round(Math.random());
+        var isMonsanto = chance.bool();
         sess.monsanto = isMonsanto;
-        room = {
-            monsantoJoined: !isMonsanto
-        };
+        room = { monsantoJoined: isMonsanto };
 
         res.sendFile('init.html',{root: __dirname});
     } else {
-        if(room.monsantoJoined){
-            sess.monsanto = false;
-        } else {
-            sess.monsanto = true;
-        }
+        sess.monsanto = !room.monsantoJoined;
 
         delete room.monsantoJoined;
         
         room.playerJoined();
+
+        //initialize stuff
+        function genStartStuff(){
+            function genPawnTemplate() {
+                return {main: [], mates: []};
+            }
+            var genes = {
+                lawyer: genPawnTemplate(),
+                scientist: genPawnTemplate(),
+                soldier: genPawnTemplate(),
+                special: genPawnTemplate()
+            };
+            Object.keys(genes).forEach(function(curPawnKey){
+                genes[curPawnKey].main = (logic.genMate(logic.traits[curPawnKey]));
+                for (var k = 0; k < 3; ++k) {
+                    genes[curPawnKey].mates.push(logic.genMate(logic.traits[curPawnKey]));
+                }
+            });
+            return genes;
+        }
+
+        room.monsanto = genStartStuff();
+        room.opposition = genStartStuff()
 
         res.redirect('play');
     }
@@ -76,8 +97,6 @@ app.get('/play', function(req, res){
     var view = sess.monsanto ? monsantoView : oppositionView;
     fs.readFile('./play.html', 'utf8', (err, pf) => res.send(mustache.render(pf, view)).end() );
 });
-
-
 
 app.get('/get-rooms', function(req, res){
     res.send(games).end();
