@@ -4,7 +4,7 @@ var dnaContainer = document.getElementById('dna-inner-container');
 
 [].forEach.call(selectionImgs, function(curImg, curIndex){
     curImg.addEventListener('click', function(){
-        slider.style.marginLeft = 'calc(9vh * ' + curIndex + ' - 2px)';
+        slider.style.marginLeft = 9 * curIndex + 'vh';
         dnaContainer.style.marginLeft = -85 * curIndex + 'vw';
     });
 });

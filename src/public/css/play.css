@@ -1,5 +1,6 @@
 body {
     font-family: "Open Sans", Helvetica, sans-serif;
+    overflow: hidden;
 }
 #money-container {
     position: absolute;
@@ -49,7 +50,8 @@ body {
     position: absolute;
     width: 9vh;
     height: 9vh;
-    top: -2px;
+    top: 0;
+    box-sizing: border-box;
     transition: margin-left 200ms ease-in-out;
     z-index: 100;
 }
