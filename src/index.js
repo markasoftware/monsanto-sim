@@ -9,6 +9,8 @@ var chance = new (require('chance'))();
 var app = express();
 
 var logic = require('./logic.js');
+var data = require('./data.js');
+var games = data.games, traits = data.traits;
 
 //prepare the thingies
 var monsantoView = {
@@ -19,8 +21,6 @@ var oppositionView =  {
     side: 'opposition',
     specialImg: 'farmer'
 };
-
-var games = {};
 
 app.use(express.static('public'));
 app.use(session({
@@ -67,9 +67,9 @@ app.post('/init', function(req, res){
                 special: genPawnTemplate()
             };
             Object.keys(genes).forEach(function(curPawnKey){
-                genes[curPawnKey].main = (logic.genMate(logic.traits[curPawnKey]));
+                genes[curPawnKey].main = (logic.genMate(traits[curPawnKey]));
                 for (var k = 0; k < 3; ++k) {
-                    genes[curPawnKey].mates.push(logic.genMate(logic.traits[curPawnKey]));
+                    genes[curPawnKey].mates.push(logic.genMate(traits[curPawnKey]));
                 }
             });
             return genes;
