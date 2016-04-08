@@ -10,7 +10,7 @@ app.get('/ajax/start', (req, res, next) => {
     var room = games[sess.room];
 
     //the object we'll send to the client
-    toSend = room[req.monsanto ? 'monsanto' : 'opposition'];
+    toSend = room[sess.monsanto ? 'monsanto' : 'opposition'];
     toSend.traits = room.traits;
 
     res.send(toSend).end();

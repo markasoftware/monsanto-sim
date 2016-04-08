@@ -71,7 +71,7 @@ app.post('/init', function(req, res){
             room[curSide] = {money: 500, people: genStartStuff()};
         });
 
-        var letters = chance.shuffle('abcdefghijklmnopqrstuvwxyz'.split('').slice(0, traits.lawyer.length + traits.scientist.length + traits.special.length + traits.soldier.length + 1));
+        var letters = chance.shuffle('abcdefghijklmnopqrstuvwxyz'.split(''));
         var letterIndex = 0;
 
         room.traits = {};
