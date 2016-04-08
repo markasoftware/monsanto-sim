@@ -7,8 +7,22 @@ function createDNAColumn(person, pawnTraits, isMain){
     dnaCol.id = person.name;
     if(isMain) dnaCol.classList.add('dna-column-left');
     var dnaColInner = document.createElement('div');
+
+    //add names and stuff
+    var nameElt = document.createElement('div');
+    nameElt.classList.add('dna-padder');
+    nameElt.textContent = person.name;
+    dnaCol.appendChild(nameElt);
+
     dnaColInner.classList.add('dna-column-inner');
     dnaCol.appendChild(dnaColInner);
+
+    //now add price
+    var priceElt = document.createElement('div');
+    priceElt.classList.add('dna-padder');
+    priceElt.textContent = '$' + person.price;
+    dnaCol.appendChild(priceElt);
+
     //create the 2 gene subcolumns
     //fuck it
     function doTheThingy(){
