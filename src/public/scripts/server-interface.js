@@ -35,4 +35,10 @@ ajax('ajax/start', function(data){
     console.log(data);
     traits = data.traits;
     updateMoney(data.money);
+    pawns.forEach(function(curPawn){
+        var curContainer = document.getElementById(curPawn + '-container');
+        data.people[curPawn].forEach(function(curPerson, curIndex){
+            curContainer.appendChild(createDNAColumn(curPerson, traits[curPawn], curIndex === 0));
+        });
+    });
 });

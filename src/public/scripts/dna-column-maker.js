@@ -1,10 +1,10 @@
 //this can create dna column things!
 
-function createDNAColumn(personName, price, isMain, pairs, traitList, letters){
+function createDNAColumn(person, pawnTraits, isMain){
     //create the root column element
     var dnaCol = document.createElement('div');
     dnaCol.classList.add('dna-column');
-    dnaCol.id = personName;
+    dnaCol.id = person.name;
     if(isMain) dnaCol.classList.add('dna-column-left');
     var dnaColInner = document.createElement('div');
     dnaColInner.classList.add('dna-column-inner');
@@ -39,12 +39,20 @@ function createDNAColumn(personName, price, isMain, pairs, traitList, letters){
     function createAlleleElt(letter, traitName, oort){
         var alleleElt = document.createElement('div');
         alleleElt.classList.add('allele');
-        alleleElt.id = personName + traitName + oort;
+        alleleElt.id = person.name + traitName + oort;
         alleleElt.textContent = letter;
         return alleleElt;
     };
 
-    pairs.forEach(function(curPair, curIndex){
+    //get letters and traits
+
+    var letters = [], traitList = [];
+    pawnTraits.forEach(function(curTrait) {
+        letters.push(curTrait.letter);
+        traitList.push(curTrait.trait);
+    });
+
+    person.genes.forEach(function(curPair, curIndex){
         geneSubCol1.appendChild(createAlleleElt(curPair[0] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 1));
         geneSubCol2.appendChild(createAlleleElt(curPair[1] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 2));
         if (curIndex % 2 === 0) dnaIconSubCol.appendChild(createIconElt());
