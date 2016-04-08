@@ -7,9 +7,15 @@ module.exports.hasTrait = (traitPair, isDominant) => {
 }
 
 module.exports.genMate = (traitList) => {
-    var mate = [];
+    var male =  typeof arguments[1] !== 'undefined' ? !arguments[1] : chance.bool();
+    var mate = {
+        genes: [],
+        male: male,
+        name: chance.first({gender: male ? 'male' : 'female'}),
+        price: chance.natural({min: 200, max: 400})
+    };
     traitList.forEach(function(){
-        mate.push([chance.bool(), chance.bool()]);
+        mate.genes.push([chance.bool(), chance.bool()]);
     });
     return mate;
 }

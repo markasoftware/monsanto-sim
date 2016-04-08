@@ -24,6 +24,7 @@ body {
     bottom: 0;
     text-align: center;
     width: 100%;
+    transition: opacity 250ms ease-in-out;
 }
 #side {
     position: absolute;

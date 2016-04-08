@@ -1,6 +1,6 @@
 //this can create dna column things!
 
-function createDNAColumn(personName, price, isMain, pairs){
+function createDNAColumn(personName, price, isMain, pairs, traitList, letters){
     //create the root column element
     var dnaCol = document.createElement('div');
     dnaCol.classList.add('dna-column');
@@ -44,12 +44,10 @@ function createDNAColumn(personName, price, isMain, pairs){
         return alleleElt;
     };
 
-    pairs.forEach(function(curPair){
-        geneSubCol1.appendChild(createAlleleElt(curPair.g1a1, curPair.g1, 1));
-        geneSubCol2.appendChild(createAlleleElt(curPair.g1a2, curPair.g1, 2));
-        geneSubCol1.appendChild(createAlleleElt(curPair.g2a1, curPair.g2, 1));
-        geneSubCol2.appendChild(createAlleleElt(curPair.g2a2, curPair.g2, 2));
-        dnaIconSubCol.appendChild(createIconElt());
+    pairs.forEach(function(curPair, curIndex){
+        geneSubCol1.appendChild(createAlleleElt(curPair[0] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 1));
+        geneSubCol2.appendChild(createAlleleElt(curPair[1] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 2));
+        if (curIndex % 2 === 0) dnaIconSubCol.appendChild(createIconElt());
     });
     
     return dnaCol;

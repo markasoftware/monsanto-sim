@@ -18,3 +18,7 @@ module.exports.traits = {
 };
 
 module.exports.games = {};
+
+module.exports.pawns = ['lawyer', 'scientist', 'special', 'soldier'];
+
+module.exports.sides = ['monsanto', 'opposition'];

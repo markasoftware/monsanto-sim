@@ -10,7 +10,7 @@ var app = express();
 
 var logic = require('./logic.js');
 var data = require('./data.js');
-var games = data.games, traits = data.traits;
+var games = data.games, traits = data.traits, pawns = data.pawns, sides = data.sides;
 
 //prepare the thingies
 var monsantoView = {
@@ -57,26 +57,30 @@ app.post('/init', function(req, res){
 
         //initialize stuff
         function genStartStuff(){
-            function genPawnTemplate() {
-                return {main: [], mates: []};
-            }
-            var genes = {
-                lawyer: genPawnTemplate(),
-                scientist: genPawnTemplate(),
-                soldier: genPawnTemplate(),
-                special: genPawnTemplate()
-            };
-            Object.keys(genes).forEach(function(curPawnKey){
-                genes[curPawnKey].main = (logic.genMate(traits[curPawnKey]));
-                for (var k = 0; k < 3; ++k) {
-                    genes[curPawnKey].mates.push(logic.genMate(traits[curPawnKey]));
+            var genes = {};
+            pawns.forEach(function(curPawnKey){
+                genes[curPawnKey] = [];
+                for (var k = 0; k < 4; ++k) {
+                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey]));
                 }
             });
             return genes;
         }
 
-        room.monsanto = genStartStuff();
-        room.opposition = genStartStuff()
+        sides.forEach((curSide) => {
+            room[curSide] = {money: 500, people: genStartStuff()};
+        });
+
+        var letters = chance.shuffle('abcdefghijklmnopqrstuvwxyz'.split('').slice(0, traits.lawyer.length + traits.scientist.length + traits.special.length + traits.soldier.length + 1));
+        var letterIndex = 0;
+
+        room.traits = {};
+        pawns.forEach((curKey) => {
+            room.traits[curKey] = [];
+            traits[curKey].forEach((curTrait) => {
+                room.traits[curKey].push({trait: curTrait, letter: letters[letterIndex++]});
+            });
+        });
 
         res.redirect('play');
     }
