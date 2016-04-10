@@ -7,10 +7,10 @@ img {
     filter: invert(1);
 }
 #selector-box {
-    border-top: 2px solid white;
-    border-left: 2px solid white;
-    border-right: 2px solid white;
-    border-bottom: 2px solid #367588;
+    border: 2px solid white;
+}
+#selector-cover {
+    background-color: #367588;
 }
 #dna-container {
     border-top: 2px solid white;

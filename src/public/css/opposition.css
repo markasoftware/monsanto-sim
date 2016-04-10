@@ -1,13 +1,13 @@
 #selector-box {
-    border-top: 2px solid black;
-    border-left: 2px solid black;
-    border-right: 2px solid black;
-    border-bottom: 2px solid goldenrod;
+    border: 2px solid black;
 }
 #dna-container {
     border-top: 2px solid black;
     border-left: 2px solid black;
     border-right: 2px solid black;
+}
+#selector-cover {
+    background-color: goldenrod;
 }
 body {
     background-color: goldenrod;

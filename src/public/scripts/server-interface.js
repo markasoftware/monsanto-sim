@@ -42,3 +42,43 @@ ajax('ajax/start', function(data){
         });
     });
 });
+
+//ending the turn
+
+document.getElementById('end-turn-button').addEventListener('click', function() {
+    hideMain();
+    var hasDisplayed = false;
+    var largeText = document.getElementById('large-text');
+    var waitTextDisplay = setTimeout(function(){
+        hasDisplayed = true;
+        largeText.textContent = 'Waiting...';
+        largeText.style.opacity = '1';
+        largeText.style.transform = 'translateY(0vh)';
+    }, 800);
+    ajax('ajax/turn', function(data){
+        if(hasDisplayed) {
+            clearTimeout(waitTextDisplay);
+            processStuff(data);
+        } else {
+            largeText.style.opacity = '0';
+            largeText.style.transform = 'translateY(10vh)';
+            setTimeout(function(){
+                processStuff(data);
+            }, 700);
+        }
+    });
+    function processStuff(data){
+        processLargeTextArr(
+            [
+                {text: 'Fight!', duration: 650},
+                {text: 'Lawyer Battle:', duration: 650},
+                {text: 'Your Odds:', duration: 400},
+                {text: data.yourOdds + '%', duration: 400},
+                {text: 'Their Odds:', duration: 400},
+                {text: data.theirOdds + '%', duration: 400},
+                {text: 'Winner:', duration: 800},
+                {text: data.winner, duration: 500}
+            ]
+        );
+    }
+});
