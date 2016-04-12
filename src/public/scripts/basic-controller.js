@@ -6,6 +6,8 @@ function updateMoney(newVal) {
         return
     }
     //who cares about stuff anyways right
+    console.log(globalMoney, newVal);
+    if(globalMoney == newVal) return;
     globalMoney = newVal;
     moneyElt.style.opacity = 0;
     setTimeout(function() {

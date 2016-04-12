@@ -37,10 +37,12 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.yourOdds = m ? stuff.monsantoOdds : (100 - stuff.monsantoOdds);
         stuff.theirOdds = m ? (100 - stuff.monsantoOdds) : stuff.monsantoOdds;
         stuff.winner = m ? stuff.winner : !stuff.winner;
-        stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : room[gs(m)].money -= stuff.lawyerDamages;
+        stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : (room[gs(m)].money -= stuff.lawyerDamages);
         stuff.soldierDamage = informationStuff.soldierAttack[gs(!m)];
         stuff.soldierAttack = informationStuff.soldierAttack[gs(m)];
-        stuff.soldierMoney = stuff.lawyerMoney - stuff.soldierDamage;
+        stuff.soldierMoney = (room[gs(m)].money -= stuff.soldierDamage);
+        stuff.profit = stuff.profit[gs(m)];
+        stuff.finalMoney = (room[gs(m)].money += stuff.profit);
         stuff.winner = stuff.winner ? 'You' : 'Them';
         return stuff;
     }
@@ -67,6 +69,13 @@ app.get('/ajax/turn', (req, res, next) => {
             informationStuff.soldierAttack[gs(curSide)] = chance.natural({min: baseDmg - 30, max: baseDmg + 30});
         });
 
+        //PROFIT
+        informationStuff.profit = {};
+        [true, false].forEach((curSide) => {
+            var baseProfit = 400;
+            //do stuff here
+            informationStuff.profit[gs(curSide)] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
+        });
         room.turnOver(processStuff(informationStuff, !sess.monsanto));
         res.send(processStuff(informationStuff, sess.monsanto)).end();
 

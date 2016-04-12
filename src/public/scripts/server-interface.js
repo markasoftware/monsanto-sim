@@ -69,6 +69,7 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
         }
     });
     function processStuff(data){
+        console.log(data);
         processLargeTextArr(
             [
                 {text: 'Fight!', duration: 650},
@@ -80,12 +81,14 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: 'Winner:', duration: 600},
                 {text: data.winner, duration: 500},
                 {text: 'Damages:', duration: 600},
-                {text: '$' + data.lawyerDamages, duration: 600, money: data.lawyerMoney === globalMoney ? null : data.lawyerMoney},
+                {text: '$' + data.lawyerDamages, duration: 600, money: data.lawyerMoney},
                 {text: 'Soldier Battle:', duration: 650},
                 {text: 'Damage to opponent:', duration: 400},
                 {text: '$' + data.soldierAttack, duration: 500},
                 {text: 'Damage to you:', duration: 400},
-                {text: '$' + data.soldierDamage, duration: 600, money: data.soldierMoney}
+                {text: '$' + data.soldierDamage, duration: 600, money: data.soldierMoney},
+                {text: 'Profit:', duration: 650},
+                {text: '$' + data.profit, duration: 500, money: data.finalMoney}
             ]
         ,function(){
             showMain();
