@@ -80,8 +80,9 @@ app.post('/init', function(req, res){
             var genes = {};
             pawns.forEach(function(curPawnKey){
                 genes[curPawnKey] = [];
+                var mainIsMale = chance.bool();
                 for (var k = 0; k < 4; ++k) {
-                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey]));
+                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey], (k === 0 ? mainIsMale : !mainIsMale)));
                 }
             });
             return genes;

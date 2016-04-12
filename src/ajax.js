@@ -2,6 +2,7 @@ var chalk = require('chalk');
 var chance = new (require('chance'))();
 var express = require('express');
 var logic = require('./logic.js');
+var gs = logic.gs;
 var data = require('./data.js');
 var games = data.games, traits = data.traits;
 
@@ -30,28 +31,52 @@ app.get('/ajax/turn', (req, res, next) => {
     console.log(chalk.grey('monsanto: ' + sess.monsanto));
     var room = games[sess.room];
     var informationStuff = {};
-    function processStuff(stuff) {
+    function processStuff(stuff, m) {
+        console.log(chalk.grey('proccesing stuff for monsanto: ' + m));
         stuff = JSON.parse(JSON.stringify(stuff));
-        stuff.yourOdds = sess.monsanto ? stuff.monsantoOdds : (100 - stuff.monsantoOdds);
-        stuff.theirOdds = sess.monsanto ? (100 - stuff.monsantoOdds) : stuff.monsantoOdds;
-        stuff.winner = sess.monsanto ? stuff.winner : !stuff.winner;
+        stuff.yourOdds = m ? stuff.monsantoOdds : (100 - stuff.monsantoOdds);
+        stuff.theirOdds = m ? (100 - stuff.monsantoOdds) : stuff.monsantoOdds;
+        stuff.winner = m ? stuff.winner : !stuff.winner;
+        stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : room[gs(m)].money -= stuff.lawyerDamages;
+        stuff.soldierDamage = informationStuff.soldierAttack[gs(!m)];
+        stuff.soldierAttack = informationStuff.soldierAttack[gs(m)];
+        stuff.soldierMoney = stuff.lawyerMoney - stuff.soldierDamage;
         stuff.winner = stuff.winner ? 'You' : 'Them';
         return stuff;
     }
     if(room.turnOver) {
         console.log(chalk.grey('other player already ended'));
+        console.log(chalk.grey('room: ' + sess.room));
+        console.log(chalk.grey('monsanto: ' + sess.monsanto));
 
         //ok, here's where the stuff will go
 
+        //LAWYER
         informationStuff.monsantoOdds = 50;
-
         informationStuff.winner = chance.bool({likeliness: informationStuff.monsantoOdds});
 
-        room.turnOver(processStuff(informationStuff));
+        console.log(chalk.grey('winner: ' + informationStuff.winner));
 
-        res.send(processStuff(informationStuff)).end();
+        informationStuff.lawyerDamages = chance.natural({min: 100, max: 250});
+
+        //SOLDIER
+        informationStuff.soldierAttack = {};
+        [true, false].forEach((curSide) => {
+            var baseDmg = 200;
+            //do stuff here
+            informationStuff.soldierAttack[gs(curSide)] = chance.natural({min: baseDmg - 30, max: baseDmg + 30});
+        });
+
+        room.turnOver(processStuff(informationStuff, !sess.monsanto));
+        res.send(processStuff(informationStuff, sess.monsanto)).end();
+
+        next();
     } else {
+        console.log(chalk.grey('creating turnOver function'));
+        console.log(chalk.grey('room: ' + sess.room));
+        console.log(chalk.grey('monsanto: ' + sess.monsanto));
         room.turnOver = function(stuff) {
+            delete room.turnOver;
             res.send(stuff).end();
             next();
         }

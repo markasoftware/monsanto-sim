@@ -5,6 +5,8 @@ function updateMoney(newVal) {
         moneyElt.textContent = newVal;
         return
     }
+    //who cares about stuff anyways right
+    globalMoney = newVal;
     moneyElt.style.opacity = 0;
     setTimeout(function() {
         moneyElt.textContent = newVal;
@@ -35,10 +37,15 @@ function setLargeText(text, duration, done) {
     }, duration + 200);
 }
 
-function processLargeTextArr(textArr) {
+function processLargeTextArr(textArr, done) {
     function nextThingy(curInd) {
+        if(curInd === textArr.length) {
+            done();
+            return;
+        }
+        if(textArr[curInd].money) setTimeout(function() { updateMoney(textArr[curInd].money) }, 300);
         setLargeText(textArr[curInd].text, textArr[curInd].duration, function(){
-            setTimeout(function(){ nextThingy(curInd + 1) }, 500);
+            setTimeout(function(){ nextThingy(curInd + 1) }, 350);
         });
     };
     nextThingy(0);
