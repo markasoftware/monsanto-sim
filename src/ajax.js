@@ -47,11 +47,17 @@ app.get('/ajax/turn', (req, res, next) => {
         return stuff;
     }
     if(room.turnOver) {
+        if(typeof room.turnEndSide !== 'undefined' && room.turnEndSide === sess.monsanto){
+            res.send({doTurn: false}).end();
+            return;
+        }
         console.log(chalk.grey('other player already ended'));
         console.log(chalk.grey('room: ' + sess.room));
         console.log(chalk.grey('monsanto: ' + sess.monsanto));
 
         //ok, here's where the stuff will go
+        
+        informationStuff.doTurn = true;
 
         //LAWYER
         informationStuff.monsantoOdds = 50;
@@ -84,8 +90,10 @@ app.get('/ajax/turn', (req, res, next) => {
         console.log(chalk.grey('creating turnOver function'));
         console.log(chalk.grey('room: ' + sess.room));
         console.log(chalk.grey('monsanto: ' + sess.monsanto));
+        room.turnEndSide = sess.monsanto;
         room.turnOver = function(stuff) {
             delete room.turnOver;
+            delete room.turnEndSide;
             res.send(stuff).end();
             next();
         }

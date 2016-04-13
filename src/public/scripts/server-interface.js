@@ -46,33 +46,25 @@ ajax('ajax/start', function(data){
 
 //ending the turn
 
+var turnEnding = false;
+
 document.getElementById('end-turn-button').addEventListener('click', function() {
+    if(turnEnding) return;
+    turnEnding = true;
     hideMain();
-    var hasDisplayed = false;
     var largeText = document.getElementById('large-text');
     var waitTextDisplay = setTimeout(function(){
-        hasDisplayed = true;
         largeText.textContent = 'Waiting...';
         largeText.style.opacity = '1';
         largeText.style.transform = 'translateY(0vh)';
     }, 800);
     ajax('ajax/turn', function(data){
-        if(hasDisplayed) {
-            clearTimeout(waitTextDisplay);
-            processStuff(data);
-        } else {
-            largeText.style.opacity = '0';
-            largeText.style.transform = 'translateY(10vh)';
-            setTimeout(function(){
-                processStuff(data);
-            }, 700);
-        }
+        if(!data.doTurn) return;
+        setLargeText('Fight!', 600, function(){ setTimeout(function(){ processStuff(data)}, 250) });
     });
     function processStuff(data){
-        console.log(data);
         processLargeTextArr(
             [
-                {text: 'Fight!', duration: 650},
                 {text: 'Lawyer Battle:', duration: 650},
                 {text: 'Your Odds:', duration: 400},
                 {text: data.yourOdds + '%', duration: 400},
@@ -91,6 +83,7 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: '$' + data.profit, duration: 500, money: data.finalMoney}
             ]
         ,function(){
+            turnEnding = false;
             showMain();
         });
     }
