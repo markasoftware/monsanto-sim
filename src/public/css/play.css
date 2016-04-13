@@ -1,6 +1,8 @@
 body {
     font-family: "Open Sans", Helvetica, sans-serif;
     overflow: hidden;
+    height: 100vh;
+    width: 100vw;
 }
 #money-container {
     position: absolute;
@@ -31,6 +33,7 @@ body {
     top: 5vh;
     right: 4vw;
     font-size: 2.5em;
+    transition: opacity 300ms ease-in-out;
 }
 #main-container {
     position: absolute;
@@ -55,7 +58,7 @@ body {
     height: 9vh;
     top: 0;
     box-sizing: border-box;
-    transition: margin-left 200ms ease-in-out;
+    transition: transform 200ms ease-in-out;
     z-index: 100;
 }
 #selector-cover {
@@ -119,7 +122,7 @@ body {
 }
 #dna-inner-container {
     display: flex;
-    transition: margin-left 200ms ease-in-out;
+    transition: transform 200ms ease-in-out;
 }
 #large-text {
     width: 100vw;
