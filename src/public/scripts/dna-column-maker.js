@@ -19,7 +19,7 @@ function createDNAColumn(person, pawnTraits, isMain){
 
     //now add price
     var priceElt = document.createElement('div');
-    priceElt.classList.add('dna-padder');
+    priceElt.classList.add('dna-padder', 'dna-money');
     priceElt.textContent = '$' + person.price;
     dnaCol.appendChild(priceElt);
 

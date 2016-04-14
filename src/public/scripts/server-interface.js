@@ -37,10 +37,27 @@ ajax('ajax/start', function(data){
     updateMoney(data.money);
     globalMoney = data.money;
     pawns.forEach(function(curPawn){
+        //first, add traits
+        var traitLabelContainer = document.createElement('div');
+        traitLabelContainer.classList.add('trait-label-container', 'dna-column');
+        var padderTop = document.createElement('div');
+        padderTop.classList.add('dna-padder');
+        traitLabelContainer.appendChild(padderTop);
+        traits[curPawn].forEach(function(curTrait){
+            var traitElt = document.createElement('div');
+            traitElt.classList.add('trait-label');
+            traitElt.textContent = curTrait.trait + ':';
+            traitLabelContainer.appendChild(traitElt);
+        });
+
         var curContainer = document.getElementById(curPawn + '-container');
+
+        curContainer.appendChild(traitLabelContainer);
+
         data.people[curPawn].forEach(function(curPerson, curIndex){
             curContainer.appendChild(createDNAColumn(curPerson, traits[curPawn], curIndex === 0));
         });
+        setupBuying();
     });
 });
 
@@ -88,3 +105,18 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
         });
     }
 });
+
+//buying stuff
+function setupBuying(){
+    [].forEach.call(document.getElementsByClassName('dna-money'), function(curElt){
+        curElt.addEventListener('click', function(e){
+            //hide other columns
+            var parentName = e.target.parentNode.id;
+            var pawnName = e.target.parentNode.parentNode.id;
+            [].forEach.call(
+                document.querySelectorAll('#' + pawnName + '>.dna-column:not(#' + parentName + '):not(.dna-column-left):not(.trait-label-container)'),
+                function(curToHide) { curToHide.style.opacity = '0' }
+            );
+        });
+    });
+}

@@ -34,6 +34,7 @@ body {
     right: 4vw;
     font-size: 2.5em;
     transition: opacity 300ms ease-in-out;
+    cursor: pointer;
 }
 #main-container {
     position: absolute;
@@ -88,6 +89,7 @@ body {
     align-items: stretch;
     justify-content: flex-start;
     margin: 2vmin;
+    transition: opacity 350ms ease-in-out;
 }
 .dna-column-inner {
     display: flex;
@@ -119,6 +121,14 @@ body {
     font-size: 20pt;
     height: 2em;
     line-height: 2em;
+}
+.dna-money {
+    cursor: pointer;
+}
+.trait-label {
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
 }
 #dna-inner-container {
     display: flex;
