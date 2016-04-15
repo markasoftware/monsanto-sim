@@ -107,15 +107,49 @@ app.post('/ajax/buy', function(req, res, next){
     console.log(chalk.grey('side: ' + sess.monsanto));
     var reqData = JSON.parse(req.body.json);
     console.log(reqData);
-    var personGenes = games[sess.room][gs(sess.monsanto)].people[reqData.pawn][reqData.boughtIndex].genes;
+    var pawnPeople = games[sess.room][gs(sess.monsanto)].people[reqData.pawn];
+    var buyingPerson = pawnPeople[reqData.boughtIndex].genes;
+    var mainPawn = pawnPeople[0].genes;
+
+    //MONEY
+    var afterMoney = (games[sess.room][gs(sess.monsanto)].money -= pawnPeople[reqData.boughtIndex].price);
+
+    //CROSSOVER
     var crossoverIndex = chance.integer({min: 0, max: traits[reqData.pawn].length - 1});
-    console.log(personGenes);
-    console.log(crossoverIndex);
-    var val1 = !!personGenes[crossoverIndex][0];
-    var val2 = !!personGenes[crossoverIndex][1];
-    personGenes[crossoverIndex][0] = val2;
-    personGenes[crossoverIndex][1] = val1;
-    res.send({crossover: crossoverIndex});
+    var val1 = !!buyingPerson[crossoverIndex][0];
+    var val2 = !!buyingPerson[crossoverIndex][1];
+    buyingPerson[crossoverIndex][0] = val2;
+    buyingPerson[crossoverIndex][1] = val1;
+
+    //INDEPENDENT ASSORTMENT
+    var numOfSectors = traits[reqData.pawn].length/2;
+    function assort(genesToSort){
+        var sectors = [];
+        for(var k = 0; k < numOfSectors; ++k){
+            var curBool = chance.bool();
+            sectors.push(curBool, curBool);
+        }
+        var selectedAlleles = [];
+        sectors.forEach(function(curSector, curIndex){
+            console.log(genesToSort, curIndex);
+            selectedAlleles.push(genesToSort[curIndex][+curSector]);
+        });
+        return {
+            sectors: sectors,
+            selectedAlleles: selectedAlleles
+        };
+    }
+    var assortedMain = assort(mainPawn);
+    var assortedBuy = assort(buyingPerson);
+
+    res.send({
+        money: afterMoney,
+        crossover: crossoverIndex,
+        assort: {
+            main: assortedMain,
+            buy: assortedBuy
+        }
+    });
 });
 
 module.exports = app;

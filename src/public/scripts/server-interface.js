@@ -123,8 +123,12 @@ function setupBuying(){
                 pawn: pawnName,
                 boughtIndex: [].indexOf.call(buyCol.parentNode.childNodes, buyCol) - 1
             }, function(data){
+                //deal with money
+                updateMoney(data.money);
+                //everything else
                 var nowTime = Date.now();
-                if(nowTime - startTime < 500) setTimeout(doBuy, 500 - (nowTime - startTime));
+                var waitForCrossover = 1750;
+                if(nowTime - startTime < waitForCrossover) setTimeout(doBuy, waitForCrossover - (nowTime - startTime));
                 else doBuy();
                 function doBuy(){
                     console.log('doBuy');
@@ -143,8 +147,21 @@ function setupBuying(){
                         setTimeout(function(){
                             
                             //independent assortment
-
-                        }, 300);
+                            hideAlleles(data.assort.main.sectors, buyCol.parentNode.querySelector('.dna-column:nth-child(2)'));
+                            hideAlleles(data.assort.buy.sectors, buyCol);
+                            function hideAlleles(hideData, parentCol){
+                                hideData.forEach(function(curHideThingy, curIndex){
+                                    //I'm really really sorry for this
+                                    debugger;
+                                    parentCol.querySelector('.dna-column-inner .dna-icon-column:nth-child(' +
+                                            (curHideThingy ? '3' : '1') +
+                                            ') .allele:nth-child(' +
+                                            (curIndex + 1) +
+                                            ')')
+                                            .style.opacity = '0';
+                                });
+                            }
+                        }, 800);
                     }, 350);
                 }
             });
