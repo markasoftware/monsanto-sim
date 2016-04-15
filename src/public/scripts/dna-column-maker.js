@@ -18,10 +18,12 @@ function createDNAColumn(person, pawnTraits, isMain){
     dnaCol.appendChild(dnaColInner);
 
     //now add price
-    var priceElt = document.createElement('div');
-    priceElt.classList.add('dna-padder', 'dna-money');
-    priceElt.textContent = '$' + person.price;
-    dnaCol.appendChild(priceElt);
+    if(!isMain){
+        var priceElt = document.createElement('div');
+        priceElt.classList.add('dna-padder', 'dna-money');
+        priceElt.textContent = '$' + person.price;
+        dnaCol.appendChild(priceElt);
+    }
 
     //create the 2 gene subcolumns
     //fuck it
@@ -50,10 +52,10 @@ function createDNAColumn(person, pawnTraits, isMain){
     var createIconElt = function(){return genericDnaIconElt.cloneNode(true)}
 
     //private function to create the element for an allele
-    function createAlleleElt(letter, traitName, oort){
+    function createAlleleElt(letter, traitID, oort){
         var alleleElt = document.createElement('div');
         alleleElt.classList.add('allele');
-        alleleElt.id = person.name + traitName + oort;
+        alleleElt.id = person.name + traitID + oort;
         alleleElt.textContent = letter;
         return alleleElt;
     };
@@ -67,8 +69,8 @@ function createDNAColumn(person, pawnTraits, isMain){
     });
 
     person.genes.forEach(function(curPair, curIndex){
-        geneSubCol1.appendChild(createAlleleElt(curPair[0] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 1));
-        geneSubCol2.appendChild(createAlleleElt(curPair[1] ? letters[curIndex].toUpperCase() : letters[curIndex], traitList[curIndex], 2));
+        geneSubCol1.appendChild(createAlleleElt(curPair[0] ? letters[curIndex].toUpperCase() : letters[curIndex], curIndex, 1));
+        geneSubCol2.appendChild(createAlleleElt(curPair[1] ? letters[curIndex].toUpperCase() : letters[curIndex], curIndex, 2));
         if (curIndex % 2 === 0) dnaIconSubCol.appendChild(createIconElt());
     });
     

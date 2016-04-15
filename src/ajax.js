@@ -100,4 +100,22 @@ app.get('/ajax/turn', (req, res, next) => {
     }
 });
 
+app.post('/ajax/buy', function(req, res, next){
+    console.log(chalk.yellow('/ajax/buy'));
+    var sess = req.session;
+    console.log(chalk.grey('room: ' + sess.room));
+    console.log(chalk.grey('side: ' + sess.monsanto));
+    var reqData = JSON.parse(req.body.json);
+    console.log(reqData);
+    var personGenes = games[sess.room][gs(sess.monsanto)].people[reqData.pawn][reqData.boughtIndex].genes;
+    var crossoverIndex = chance.integer({min: 0, max: traits[reqData.pawn].length - 1});
+    console.log(personGenes);
+    console.log(crossoverIndex);
+    var val1 = !!personGenes[crossoverIndex][0];
+    var val2 = !!personGenes[crossoverIndex][1];
+    personGenes[crossoverIndex][0] = val2;
+    personGenes[crossoverIndex][1] = val1;
+    res.send({crossover: crossoverIndex});
+});
+
 module.exports = app;

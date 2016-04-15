@@ -32,7 +32,6 @@ function ajaxPost(url, data, done){
 //starting the game
 
 ajax('ajax/start', function(data){
-    console.log(data);
     traits = data.traits;
     updateMoney(data.money);
     globalMoney = data.money;
@@ -57,8 +56,8 @@ ajax('ajax/start', function(data){
         data.people[curPawn].forEach(function(curPerson, curIndex){
             curContainer.appendChild(createDNAColumn(curPerson, traits[curPawn], curIndex === 0));
         });
-        setupBuying();
     });
+    setupBuying();
 });
 
 //ending the turn
@@ -111,12 +110,44 @@ function setupBuying(){
     [].forEach.call(document.getElementsByClassName('dna-money'), function(curElt){
         curElt.addEventListener('click', function(e){
             //hide other columns
-            var parentName = e.target.parentNode.id;
-            var pawnName = e.target.parentNode.parentNode.id;
+            var startTime = Date.now();
+            var buyCol = e.target.parentNode;
+            var parentName = buyCol.id;
+            var pawnID = buyCol.parentNode.id;
+            var pawnName = pawnID.slice(0, pawnID.indexOf('-'));
             [].forEach.call(
-                document.querySelectorAll('#' + pawnName + '>.dna-column:not(#' + parentName + '):not(.dna-column-left):not(.trait-label-container)'),
+                document.querySelectorAll('#' + pawnID + '>.dna-column:not(#' + parentName + '):not(.dna-column-left):not(.trait-label-container)'),
                 function(curToHide) { curToHide.style.opacity = '0' }
             );
+            ajaxPost('ajax/buy', {
+                pawn: pawnName,
+                boughtIndex: [].indexOf.call(buyCol.parentNode.childNodes, buyCol) - 1
+            }, function(data){
+                var nowTime = Date.now();
+                if(nowTime - startTime < 500) setTimeout(doBuy, 500 - (nowTime - startTime));
+                else doBuy();
+                function doBuy(){
+                    console.log('doBuy');
+                    //crossover
+                    var crossoverIndex = data.crossover;
+                    var baseQuery = parentName + crossoverIndex;
+                    var elt1 = document.getElementById(baseQuery + '1');
+                    var elt2 = document.getElementById(baseQuery + '2');
+                    var val1 = elt1.textContent.slice(0);
+                    var val2 = elt2.textContent.slice(0);
+                    elt1.style.opacity = elt2.style.opacity = '0';
+                    setTimeout(function(){
+                        elt1.textContent = val2;
+                        elt2.textContent = val1;
+                        elt1.style.opacity = elt2.style.opacity = '1';
+                        setTimeout(function(){
+                            
+                            //independent assortment
+
+                        }, 300);
+                    }, 350);
+                }
+            });
         });
     });
 }
