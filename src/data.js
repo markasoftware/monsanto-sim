@@ -1,19 +1,27 @@
 module.exports.traits = {
     lawyer: [
-        'small chance boost',
-        'large chance boost'
+        'sm odds boost (D)',
+        'lg odds boost',
+        'sm dmg boost (D)',
+        'lg dmg boost'
     ],
     scientist: [
-        '2 mate options',
-        '3 mate options'
+        '2 mates (D)',
+        '3 mates',
+        'sm price hit (D)',
+        'lg price hit'
     ],
     soldier: [
-        'small damage boost',
-        'large damage boost'
+        'sm dmg boost (D)',
+        'lg dmg boost',
+        'crit odds boost',
+        'crit dmg boost'
     ],
     special: [
-        'small income boost',
-        'large income boost'
+        'sm income boost (D)',
+        'lg income boost',
+        'sm crit boost (D)',
+        'lg crit boost'
     ]
 };
 
