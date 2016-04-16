@@ -43,7 +43,11 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.soldierMoney = (room[gs(m)].money -= stuff.soldierDamage);
         stuff.profit = stuff.profit[gs(m)];
         stuff.finalMoney = (room[gs(m)].money += stuff.profit);
-        stuff.winner = stuff.winner ? 'You' : 'Them';
+        stuff.winner = stuff.winner ? 'You' : 'Opponent';
+        if(typeof stuff.gg !== 'undefined'){
+            stuff.gg = m ? stuff.gg : !stuff.gg;
+            stuff.gg = stuff.gg ? 'You' : 'Opponent';
+        }
         return stuff;
     }
     if(room.turnOver) {
@@ -82,8 +86,21 @@ app.get('/ajax/turn', (req, res, next) => {
             //do stuff here
             informationStuff.profit[gs(curSide)] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
         });
+
+        //GG
+        [true, false].forEach((curSide) => {
+            if(room[gs(curSide)].money <= 0){
+                //if other person is also bankrupt
+                if(room[gs(!curSide)].money <= 0)
+                    informationStuff.gg = room.monsanto.money > room.opposition.money;
+                else
+                    informationStuff.gg = !curSide;
+            }
+        });
+
         room.turnOver(processStuff(informationStuff, !sess.monsanto));
         res.send(processStuff(informationStuff, sess.monsanto)).end();
+
 
         next();
     } else {
@@ -95,6 +112,8 @@ app.get('/ajax/turn', (req, res, next) => {
             delete room.turnOver;
             delete room.turnEndSide;
             res.send(stuff).end();
+            if (typeof stuff.gg !== 'undefined')
+                delete games[sess.room];
             next();
         }
     }

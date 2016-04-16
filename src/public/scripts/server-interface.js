@@ -79,12 +79,11 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
         setLargeText('Fight!', 600, function(){ setTimeout(function(){ processStuff(data)}, 250) });
     });
     function processStuff(data){
-        processLargeTextArr(
-            [
+        var part1 = [
                 {text: 'Lawyer Battle:', duration: 650},
                 {text: 'Your Odds:', duration: 400},
                 {text: data.yourOdds + '%', duration: 400},
-                {text: 'Their Odds:', duration: 400},
+                {text: 'Opponent\'s Odds:', duration: 400},
                 {text: data.theirOdds + '%', duration: 400},
                 {text: 'Winner:', duration: 600},
                 {text: data.winner, duration: 500},
@@ -97,9 +96,20 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: '$' + data.soldierDamage, duration: 600, money: data.soldierMoney},
                 {text: 'Profit:', duration: 650},
                 {text: '$' + data.profit, duration: 500, money: data.finalMoney}
-            ]
-        ,function(){
+        ];
+        var winText = (typeof data.gg !== 'undefined' ? 
+                [{text: 'Game Over', duration: 1500},
+                {text: data.gg + ' Won', duration: 2500}]
+                : []);
+        var combinedArr = part1.concat(winText);
+        processLargeTextArr(combinedArr,function(){
             turnEnding = false;
+            if(typeof data.gg !== 'undefined'){
+                setTimeout(function(){
+                    window.location.href = 'index.html';
+                }, 1000);
+                return;
+            }
             showMain();
         });
     }
