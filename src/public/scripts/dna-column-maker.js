@@ -3,6 +3,8 @@
 function createDNAColumn(person, pawnTraits, isMain){
     //create the root column element
     var dnaCol = document.createElement('div');
+    if(arguments[3])
+        dnaCol.style.opacity = '0';
     dnaCol.classList.add('dna-column');
     dnaCol.id = person.name;
     if(isMain) dnaCol.classList.add('dna-column-left');

@@ -149,10 +149,10 @@ function setupBuying(){
                             //independent assortment
                             hideAlleles(data.assort.main.sectors, buyCol.parentNode.querySelector('.dna-column:nth-child(2)'));
                             hideAlleles(data.assort.buy.sectors, buyCol);
+                            setTimeout(newMates, 3500);
                             function hideAlleles(hideData, parentCol){
                                 hideData.forEach(function(curHideThingy, curIndex){
                                     //I'm really really sorry for this
-                                    debugger;
                                     parentCol.querySelector('.dna-column-inner .dna-icon-column:nth-child(' +
                                             (curHideThingy ? '3' : '1') +
                                             ') .allele:nth-child(' +
@@ -163,6 +163,29 @@ function setupBuying(){
                             }
                         }, 800);
                     }, 350);
+                    function newMates(){
+                        //remove everything
+                        var pawnContainer = buyCol.parentNode;
+                        var nodesToRemove = [];
+                        [].forEach.call(pawnContainer.childNodes, function(curNode){
+                            if([].indexOf.call(curNode.classList, 'trait-label-container') === -1){
+                                curNode.style.opacity = 0;
+                                nodesToRemove.push(curNode);
+                            }
+                        });
+                        setTimeout(function(){
+                            [].forEach.call(nodesToRemove, function(curNode){
+                                curNode.parentNode.removeChild(curNode);
+                            });
+                            data.newPeople.forEach(function(curGuy, curInd){
+                                var dnaCol = createDNAColumn(curGuy, traits[pawnName], curInd === 0, true);
+                                pawnContainer.appendChild(dnaCol);
+                                setTimeout(function(){
+                                    dnaCol.style.opacity = '1';
+                                }, 400);
+                            });
+                        }, 350);
+                    };
                 }
             });
         });

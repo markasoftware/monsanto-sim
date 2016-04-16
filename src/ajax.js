@@ -141,6 +141,19 @@ app.post('/ajax/buy', function(req, res, next){
     }
     var assortedMain = assort(mainPawn);
     var assortedBuy = assort(buyingPerson);
+    var newGenes = [];
+    for(var l = 0; l < assortedMain.length; ++l){
+        newGenes[l] = [ assortedMain[l], assortedBuy[l] ];
+    }
+    
+    //NEW PEOPLE
+    var newGuys = [];
+    newGuys[0] = logic.genMate(traits[reqData.pawn], chance.bool());
+    for(var k = 0; k < 3; ++k){
+        newGuys.push(logic.genMate(traits[reqData.pawn], !newGuys[0].male));
+    }
+    pawnPeople.length = 0;
+    Object.assign(pawnPeople, newGuys);
 
     res.send({
         money: afterMoney,
@@ -148,7 +161,8 @@ app.post('/ajax/buy', function(req, res, next){
         assort: {
             main: assortedMain,
             buy: assortedBuy
-        }
+        },
+        newPeople: newGuys
     });
 });
 
