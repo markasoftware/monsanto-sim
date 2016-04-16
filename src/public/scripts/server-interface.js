@@ -117,7 +117,9 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
 
 //buying stuff
 function setupBuying(){
+    var blap = arguments[0];
     [].forEach.call(document.getElementsByClassName('dna-money'), function(curElt){
+        if(blap && curElt.parentNode.parentNode.id !== blap) return;
         curElt.addEventListener('click', function(e){
             //hide other columns
             var startTime = Date.now();
@@ -164,7 +166,7 @@ function setupBuying(){
                                 hideData.forEach(function(curHideThingy, curIndex){
                                     //I'm really really sorry for this
                                     parentCol.querySelector('.dna-column-inner .dna-icon-column:nth-child(' +
-                                            (curHideThingy ? '3' : '1') +
+                                            (curHideThingy ? '1' : '3') +
                                             ') .allele:nth-child(' +
                                             (curIndex + 1) +
                                             ')')
@@ -194,6 +196,7 @@ function setupBuying(){
                                     dnaCol.style.opacity = '1';
                                 }, 400);
                             });
+                            setupBuying(pawnID);
                         }, 350);
                     };
                 }
