@@ -165,10 +165,11 @@ app.post('/ajax/buy', function(req, res, next){
     
     //NEW PEOPLE
     var newGuys = [];
-    newGuys[0] = logic.genMate(traits[reqData.pawn], chance.bool());
+    var namePool = [];
+    newGuys[0] = logic.genMate(traits[reqData.pawn], chance.bool(), namePool);
     newGuys[0].genes = newGenes;
     for(var k = 0; k < 3; ++k){
-        newGuys.push(logic.genMate(traits[reqData.pawn], !newGuys[0].male));
+        newGuys.push(logic.genMate(traits[reqData.pawn], !newGuys[0].male, namePool));
     }
     pawnPeople.length = 0;
     Object.assign(pawnPeople, newGuys);

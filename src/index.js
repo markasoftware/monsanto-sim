@@ -79,10 +79,11 @@ app.post('/init', function(req, res){
         function genStartStuff(){
             var genes = {};
             pawns.forEach(function(curPawnKey){
+                var namePool = [];
                 genes[curPawnKey] = [];
                 var mainIsMale = chance.bool();
                 for (var k = 0; k < 4; ++k) {
-                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey], (k === 0 ? mainIsMale : !mainIsMale)));
+                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey], (k === 0 ? mainIsMale : !mainIsMale), namePool));
                 }
             });
             return genes;
