@@ -4,7 +4,7 @@ var express = require('express');
 var logic = require('./logic.js');
 var gs = logic.gs;
 var data = require('./data.js');
-var games = data.games, traits = data.traits;
+var games = data.games, traits = data.traits, pawns = data.pawns, sides = data.sides;
 
 var app = express.Router();
 
@@ -44,6 +44,7 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.profit = stuff.profit[gs(m)];
         stuff.finalMoney = (room[gs(m)].money += stuff.profit);
         stuff.winner = stuff.winner ? 'You' : 'Opponent';
+        stuff.newMates = room[gs(m)].people;
         if(typeof stuff.gg !== 'undefined'){
             stuff.gg = m ? stuff.gg : !stuff.gg;
             stuff.gg = stuff.gg ? 'You' : 'Opponent';
@@ -84,7 +85,20 @@ app.get('/ajax/turn', (req, res, next) => {
         [true, false].forEach((curSide) => {
             var baseProfit = 400;
             //do stuff here
+            console.log(chalk.grey('base profit: ' + baseProfit));
             informationStuff.profit[gs(curSide)] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
+        });
+
+        //NEW MATES
+        sides.forEach(function(curSide){
+            pawns.forEach(function(curPawn){
+                var namePool = [];
+                var curArr = room[curSide].people[curPawn];
+                curArr.length = 1;
+                for(var r = 0; r < 3; ++r){
+                    curArr.push(logic.genMate(traits[curPawn], !curArr[0].male, namePool));
+                }
+            });
         });
 
         //GG

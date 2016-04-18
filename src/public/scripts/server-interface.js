@@ -110,6 +110,14 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 }, 1000);
                 return;
             }
+            Object.keys(data.newMates).forEach(function(curPawn){
+                var newMatesArr = [];
+                data.newMates[curPawn].forEach(function(curMate, curInd){
+                    if(curInd === 0) return;
+                    newMatesArr.push([curMate, traits[curPawn], false]);
+                });
+                newPeople(newMatesArr, document.getElementById(curPawn + '-container'), false);
+            });
             showMain();
         });
     }
@@ -186,16 +194,11 @@ function setupBuying(){
                             }
                         });
                         setTimeout(function(){
-                            [].forEach.call(nodesToRemove, function(curNode){
-                                curNode.parentNode.removeChild(curNode);
-                            });
+                            var newPeopleArr = [];
                             data.newPeople.forEach(function(curGuy, curInd){
-                                var dnaCol = createDNAColumn(curGuy, traits[pawnName], curInd === 0, true);
-                                pawnContainer.appendChild(dnaCol);
-                                setTimeout(function(){
-                                    dnaCol.style.opacity = '1';
-                                }, 400);
+                                newPeopleArr.push([curGuy, traits[pawnName], curInd === 0, true]);
                             });
+                            newPeople(newPeopleArr, pawnContainer, true);
                             setupBuying(pawnID);
                         }, 350);
                     };

@@ -65,3 +65,20 @@ function processLargeTextArr(textArr, done) {
     };
     nextThingy(0);
 };
+
+function newPeople(newObjs, pawnContainer, isBuy){
+    var baseRemoveQuery = '.dna-column:not(.trait-label-container)';
+    var removeQuery = baseRemoveQuery + (isBuy ?
+        '' : ':not(.dna-column-left)');
+    [].forEach.call(pawnContainer.querySelectorAll(removeQuery), function(curNode){
+        curNode.parentNode.removeChild(curNode);
+    });
+    newObjs.forEach(function(curPerson){
+        var dnaCol = createDNAColumn.apply(window, curPerson);
+        if(isBuy) dnaCol.style.opacity = '0';
+        pawnContainer.appendChild(dnaCol);
+        if(isBuy) setTimeout(function(){
+            dnaCol.style.opacity = '1';
+        }, 400);
+    });
+}
