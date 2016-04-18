@@ -20,8 +20,8 @@ module.exports.traits = {
     special: [
         'sm income boost (D)',
         'lg income boost',
-        'sm crit boost (D)',
-        'lg crit boost'
+        'crit odds boost',
+        'crit profit boost'
     ]
 };
 

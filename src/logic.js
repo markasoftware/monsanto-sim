@@ -5,7 +5,7 @@ var traits = data.traits;
 module.exports.gs = (isM) => isM ? 'monsanto' : 'opposition';
 
 module.exports.hasTrait = (traitPair, isDominant) => {
-    return isDominant ? traitPair[0] || traitPair[1] : traitPair[0] && traitPair[0];
+    return isDominant ? (traitPair[0] || traitPair[1]) : !(traitPair[0] || traitPair[0]);
 }
 
 module.exports.genMate = (traitList, isMale, namePool) => {

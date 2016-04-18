@@ -94,14 +94,17 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: '$' + data.soldierAttack, duration: 500},
                 {text: 'Damage to you:', duration: 400},
                 {text: '$' + data.soldierDamage, duration: 600, money: data.soldierMoney},
-                {text: 'Profit:', duration: 650},
+                {text: 'Profit:', duration: 650}
+        ];
+        var part2 = [
                 {text: '$' + data.profit, duration: 500, money: data.finalMoney}
         ];
+        var critProfit = data.critProfit ? [{text: 'Critical!', duration: 550}] : [];
         var winText = (typeof data.gg !== 'undefined' ? 
                 [{text: 'Game Over', duration: 1500},
                 {text: data.gg + ' Won', duration: 2500}]
                 : []);
-        var combinedArr = part1.concat(winText);
+        var combinedArr = part1.concat(critProfit, part2, winText);
         processLargeTextArr(combinedArr,function(){
             turnEnding = false;
             if(typeof data.gg !== 'undefined'){
@@ -118,6 +121,7 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 });
                 newPeople(newMatesArr, document.getElementById(curPawn + '-container'), false);
             });
+            setupBuying();
             showMain();
         });
     }

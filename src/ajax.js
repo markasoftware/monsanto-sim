@@ -42,6 +42,7 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.soldierAttack = informationStuff.soldierAttack[gs(m)];
         stuff.soldierMoney = (room[gs(m)].money -= stuff.soldierDamage);
         stuff.profit = stuff.profit[gs(m)];
+        stuff.critProfit = stuff.critProfit[gs(m)];
         stuff.finalMoney = (room[gs(m)].money += stuff.profit);
         stuff.winner = stuff.winner ? 'You' : 'Opponent';
         stuff.newMates = room[gs(m)].people;
@@ -82,11 +83,33 @@ app.get('/ajax/turn', (req, res, next) => {
 
         //PROFIT
         informationStuff.profit = {};
-        [true, false].forEach((curSide) => {
+        informationStuff.critProfit = {};
+        sides.forEach((curSide) => {
             var baseProfit = 400;
-            //do stuff here
+
+            //traits
+            var profitMultiplier = 1;
+            var curGenes = room[curSide].people.special[0].genes;
+            if(logic.hasTrait(curGenes[0], true))
+                profitMultiplier += 0.2; 
+            if(logic.hasTrait(curGenes[1], false))
+                profitMultiplier += 0.4;
+
+            var critOdds = 5;
+            if(logic.hasTrait(curGenes[2], false))
+                critOdds = 15;
+            
+            if(chance.bool({likelihood: critOdds})){
+                profitMultiplier = logic.hasTrait(curGenes[3], false) ? 4 : 2.5;
+                informationStuff.critProfit[curSide] = true;
+            } else informationStuff.critProfit[curSide] = false;
+
+            baseProfit *= profitMultiplier;
+
+            console.log(chalk.grey.bold(curSide));
+            console.log(chalk.grey('profit multiplier: ' + profitMultiplier));
             console.log(chalk.grey('base profit: ' + baseProfit));
-            informationStuff.profit[gs(curSide)] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
+            informationStuff.profit[curSide] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
         });
 
         //NEW MATES
