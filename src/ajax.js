@@ -37,7 +37,7 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.yourOdds = m ? stuff.monsantoOdds : (100 - stuff.monsantoOdds);
         stuff.theirOdds = m ? (100 - stuff.monsantoOdds) : stuff.monsantoOdds;
         stuff.winner = m ? stuff.winner : !stuff.winner;
-        stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : (room[gs(m)].money -= stuff.lawyerDamages);
+        stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : (room[gs(m)].money -= stuff.lawyerDmg);
         stuff.soldierDamage = informationStuff.soldierAttack[gs(!m)];
         stuff.soldierAttack = informationStuff.soldierAttack[gs(m)];
         stuff.soldierMoney = (room[gs(m)].money -= stuff.soldierDamage);
@@ -65,55 +65,97 @@ app.get('/ajax/turn', (req, res, next) => {
         
         informationStuff.doTurn = true;
 
+        ////BEFORE VARIABLE DECLARATIONS////
         //LAWYER
         informationStuff.monsantoOdds = 50;
-        informationStuff.winner = chance.bool({likeliness: informationStuff.monsantoOdds});
-
-        console.log(chalk.grey('winner: ' + informationStuff.winner));
-
-        informationStuff.lawyerDamages = chance.natural({min: 100, max: 250});
-
+        var baseLawyerDmg = {
+            monsanto: 150,
+            opposition: 150
+        };
+        var baseLawyerDmg = 150;
+        var lawyerDmgVariation = 35;
+        //SCIENTIST
+        var numOfMates = {
+            monsanto: 1,
+            opposition: 1
+        };
         //SOLDIER
+        var baseSoldierDmg = {
+            monsanto: 175,
+            opposition: 175
+        };
+        var baseSoldierCritOdds = {
+            monsanto: 5,
+            opposition: 5
+        };
         informationStuff.soldierAttack = {};
-        [true, false].forEach((curSide) => {
-            var baseDmg = 200;
-            //do stuff here
-            informationStuff.soldierAttack[gs(curSide)] = chance.natural({min: baseDmg - 30, max: baseDmg + 30});
-        });
-
+        var soldierDmgVariation = 35;
         //PROFIT
+        var baseProfit = {
+            monsanto: 450,
+            opposition: 450
+        };
+        informationStuff.critProfit = {
+            monsanto: false,
+            opposition: false
+        };
         informationStuff.profit = {};
-        informationStuff.critProfit = {};
-        sides.forEach((curSide) => {
-            var baseProfit = 400;
 
-            //traits
+        ////SIDE AGNOSTIC TRAIT PROCESSING////
+
+        //LAWYER
+        informationStuff.winner = chance.bool({likelihood: informationStuff.monsantoOdds});
+        console.log(chalk.grey('lawyer winner: ' + informationStuff.winner));
+        informationStuff.lawyerDmg = chance.natural({
+            min: baseLawyerDmg - lawyerDmgVariation,
+            max: baseLawyerDmg + lawyerDmgVariation
+        });
+        console.log(chalk.grey('lawyer damage: ' + informationStuff.lawyerDmg));
+
+        ////TRAIT PROCESSING////
+        sides.forEach(function(curSide){
+            console.log(chalk.grey.bold(curSide));
+
+            informationStuff.lawyerDmg = chance.natural({
+                min: baseLawyerDmg - lawyerDmgVariation,
+                max: baseLawyerDmg + lawyerDmgVariation
+            });
+
+            //SOLDIER
+            informationStuff.soldierAttack[curSide] = chance.natural({
+                min: baseSoldierDmg[curSide] - soldierDmgVariation,
+                max: baseSoldierDmg[curSide] + soldierDmgVariation
+            });
+
+            //PROFIT
             var profitMultiplier = 1;
-            var curGenes = room[curSide].people.special[0].genes;
-            if(logic.hasTrait(curGenes[0], true))
+            var profitGenes = room[curSide].people.special[0].genes;
+            if(logic.hasTrait(profitGenes[0], true))
                 profitMultiplier += 0.2; 
-            if(logic.hasTrait(curGenes[1], false))
+            if(logic.hasTrait(profitGenes[1], false))
                 profitMultiplier += 0.4;
 
             var critOdds = 5;
-            if(logic.hasTrait(curGenes[2], false))
+            if(logic.hasTrait(profitGenes[2], false))
                 critOdds = 15;
             
             if(chance.bool({likelihood: critOdds})){
-                profitMultiplier = logic.hasTrait(curGenes[3], false) ? 4 : 2.5;
+                profitMultiplier = logic.hasTrait(profitGenes[3], false) ? 4 : 2.5;
                 informationStuff.critProfit[curSide] = true;
-            } else informationStuff.critProfit[curSide] = false;
+            }
 
-            baseProfit *= profitMultiplier;
-
-            console.log(chalk.grey.bold(curSide));
             console.log(chalk.grey('profit multiplier: ' + profitMultiplier));
-            console.log(chalk.grey('base profit: ' + baseProfit));
-            informationStuff.profit[curSide] = chance.natural({min: baseProfit - 50, max: baseProfit + 50});
-        });
 
-        //NEW MATES
-        sides.forEach(function(curSide){
+            baseProfit[curSide] *= profitMultiplier;
+            console.log(chalk.grey('base profit: ' + baseProfit[curSide]));
+            var profitVariation = 50;
+            informationStuff.profit[curSide] = chance.natural({
+                min: baseProfit[curSide] - profitVariation,
+                max: baseProfit[curSide] + profitVariation
+            });
+            console.log(chalk.grey('final profit: ' + informationStuff.profit[curSide]));
+
+            //NEW MATES/SCIENTIST
             pawns.forEach(function(curPawn){
                 var namePool = [];
                 var curArr = room[curSide].people[curPawn];
@@ -124,7 +166,10 @@ app.get('/ajax/turn', (req, res, next) => {
             });
         });
 
+        ////FINAL STUFF PROCESSING////
+
         //GG
+        //this isn't in the main part because it needs bools, not side strings
         [true, false].forEach((curSide) => {
             if(room[gs(curSide)].money <= 0){
                 //if other person is also bankrupt

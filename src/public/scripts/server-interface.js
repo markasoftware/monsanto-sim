@@ -88,7 +88,7 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: 'Winner:', duration: 600},
                 {text: data.winner, duration: 500},
                 {text: 'Damages:', duration: 600},
-                {text: '$' + data.lawyerDamages, duration: 600, money: data.lawyerMoney},
+                {text: '$' + data.lawyerDmg, duration: 600, money: data.lawyerMoney},
                 {text: 'Soldier Battle:', duration: 650},
                 {text: 'Damage to opponent:', duration: 400},
                 {text: '$' + data.soldierAttack, duration: 500},
