@@ -69,12 +69,9 @@ app.get('/ajax/turn', (req, res, next) => {
         ////BEFORE VARIABLE DECLARATIONS////
         //LAWYER
         informationStuff.monsantoOdds = 50;
-        var baseLawyerDmg = {
-            monsanto: 150,
-            opposition: 150
-        };
-        var baseLawyerDmg = 150;
+        var lawyerBaseDmg = 200;
         var lawyerDmgVariation = 35;
+        var lawyerDmg = {};
         //SCIENTIST
         var numOfMates = {
             monsanto: 1,
@@ -91,26 +88,52 @@ app.get('/ajax/turn', (req, res, next) => {
         informationStuff.critProfit = {};
         informationStuff.profit = {};
 
-        ////SIDE AGNOSTIC TRAIT PROCESSING////
-
-        //LAWYER
-        informationStuff.winner = chance.bool({likelihood: informationStuff.monsantoOdds});
-        console.log(chalk.grey('lawyer winner: ' + informationStuff.winner));
-        informationStuff.lawyerDmg = chance.natural({
-            min: baseLawyerDmg - lawyerDmgVariation,
-            max: baseLawyerDmg + lawyerDmgVariation
-        });
-        console.log(chalk.grey('lawyer damage: ' + informationStuff.lawyerDmg));
-
         ////TRAIT PROCESSING////
         sides.forEach(function(curSide){
             console.log(chalk.blue.bold(curSide));
+
+            //LAWYER
+            console.log(chalk.blue('processing lawyer'));
+
+            var lawyerGenes = room[curSide].people.lawyer[0].genes;
+
+            //odds first
+            console.log(chalk.grey('start odds: ' + informationStuff.monsantoOdds));
+            //sm odds boost
+            if(logic.hasTrait(lawyerGenes[0], true))
+                adjustOdds(10);
+            //lg odds boost
+            if(logic.hasTrait(lawyerGenes[1], false))
+                adjustOdds(20);
+            console.log(chalk.grey('end odds: ' + informationStuff.monsantoOdds));
+
+            function adjustOdds(amount){
+                informationStuff.monsantoOdds +=
+                    curSide === 'monsanto' ?
+                        amount : -amount;
+            }
+
+            //damage second
+            lawyerDmg[curSide] = logic.genericDmgProcessor(
+                lawyerBaseDmg,
+                lawyerDmgVariation,
+                false,
+                [{
+                    type: 'standard',
+                    hasTrait: logic.hasTrait(lawyerGenes[2], true),
+                    boost: 0.2
+                },
+                {
+                    type: 'standard',
+                    hasTrait: logic.hasTrait(lawyerGenes[3], false),
+                    boost: 0.4
+            }]).dmg;
 
             //SOLDIER
             console.log(chalk.blue('processing soldier'));
             var soldierGenes = room[curSide].people.soldier[0].genes;
 
-            var soldierDmg = genericDmgProcessor(
+            var soldierDmg = logic.genericDmgProcessor(
                 soldierBaseDmg,
                 soldierDmgVariation,
                 {
@@ -144,7 +167,7 @@ app.get('/ajax/turn', (req, res, next) => {
             console.log(chalk.blue('processing profit'));
             var profitMultiplier = 1;
             var profitGenes = room[curSide].people.special[0].genes;
-            var profitDmg = genericDmgProcessor(
+            var profitDmg = logic.genericDmgProcessor(
                     baseProfit,
                     profitVariation,
                     {
@@ -185,58 +208,18 @@ app.get('/ajax/turn', (req, res, next) => {
             });
         });
 
-        function genericDmgProcessor(baseDmg, dmgVariation, critData, mainData){
-            var multiplier = 1;
-            var critChance = critData.chance || 0;
-            var critDmg = critData.dmg || 0;
-            var wasCrit = false;
-            mainData.forEach(function(curData){
-                switch(curData.type){
-                    case 'standard' : {
-                        if(curData.hasTrait)
-                        multiplier += curData.boost;
-                        break;
-                    }
-                    case 'critChance' : {
-                        if(curData.hasTrait)
-                            critChance += curData.boost;
-                        break;
-                    }
-                    case 'critDmg' : {
-                        if(curData.hasTrait)
-                            critDmg += curData.boost;
-                        break;
-                    }
-                    default : {
-                        console.error(chalk.red('unknown trait type in genericDmgProcessor: ' + curData.type));
-                        break;
-                    }
-                }
-            });
-            //critical processing
-            console.log(chalk.grey('crit chance: ' + critChance));
-            if(chance.bool({likelihood: critChance})){
-                multiplier = critDmg;
-                wasCrit = true;
-                console.log(chalk.grey('critical'));
-            }
-            //multiply it
-            baseDmg *= multiplier;
-            console.log(chalk.grey('multiplier: ' + multiplier));
-            console.log(chalk.grey('final base dmg: ' + baseDmg));
-            //randomize
-            var finalDmg =  chance.natural({min: baseDmg - dmgVariation, max: baseDmg + dmgVariation});
-            console.log(chalk.grey('final dmg: ' + finalDmg));
-            return {
-                dmg: finalDmg,
-                crit: wasCrit
-            }
-        }
-
         ////FINAL STUFF PROCESSING////
+        
+        //LAWYER
+        console.log(chalk.blue('final lawyer processing'));
+        console.log(chalk.grey('monsanto odds: ' + informationStuff.monsantoOdds));
+        informationStuff.winner = chance.bool({likelihood: informationStuff.monsantoOdds});
+        console.log(chalk.grey('winner: ' + informationStuff.winner));
+        informationStuff.lawyerDmg = lawyerDmg[gs(informationStuff.winner)];
+        console.log(chalk.grey('damage: ' + informationStuff.lawyerDmg));
 
         //GG
-        //this isn't in the main part because it needs bools, not side strings
+        //not in main part because it needs bools and needs to do drawbreaking
         [true, false].forEach((curSide) => {
             if(room[gs(curSide)].money <= 0){
                 //if other person is also bankrupt
