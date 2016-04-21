@@ -2,7 +2,7 @@
 
 //bruh
 
-//global variables. I have no idea why we're defining them here
+//global variables. I have no idea why we're defining them here instead of in a different, more appropriate, file
 
 var traits, globalMoney;
 
@@ -79,7 +79,8 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
         setLargeText('Fight!', 600, function(){ setTimeout(function(){ processStuff(data)}, 250) });
     });
     function processStuff(data){
-        var part1 = [
+        var critText = [{text: 'Critical!', duration: 550}];
+        var stuffToDisplay = [
                 {text: 'Lawyer Battle:', duration: 650},
                 {text: 'Your Odds:', duration: 400},
                 {text: data.yourOdds + '%', duration: 400},
@@ -87,25 +88,32 @@ document.getElementById('end-turn-button').addEventListener('click', function() 
                 {text: data.theirOdds + '%', duration: 400},
                 {text: 'Winner:', duration: 600},
                 {text: data.winner, duration: 500},
-                {text: 'Damages:', duration: 600},
+                {text: 'Damage:', duration: 600},
                 {text: '$' + data.lawyerDmg, duration: 600, money: data.lawyerMoney},
                 {text: 'Soldier Battle:', duration: 650},
-                {text: 'Damage to opponent:', duration: 400},
+                {text: 'Damage to opponent:', duration: 400}
+        ];
+        stuffToDisplay = stuffToDisplay.concat(data.critSoldier[0] ? critText : []);
+        stuffToDisplay = stuffToDisplay.concat([
                 {text: '$' + data.soldierAttack, duration: 500},
-                {text: 'Damage to you:', duration: 400},
+                {text: 'Damage to you:', duration: 400}
+        ]);
+        stuffToDisplay = stuffToDisplay.concat(data.critSoldier[1] ? critText : []);
+        stuffToDisplay = stuffToDisplay.concat([
                 {text: '$' + data.soldierDamage, duration: 600, money: data.soldierMoney},
                 {text: 'Profit:', duration: 650}
-        ];
-        var part2 = [
+        ]);
+        var critProfit = data.critProfit ? critText : [];
+        stuffToDisplay = stuffToDisplay.concat(critProfit);
+        stuffToDisplay = stuffToDisplay.concat([
                 {text: '$' + data.profit, duration: 500, money: data.finalMoney}
-        ];
-        var critProfit = data.critProfit ? [{text: 'Critical!', duration: 550}] : [];
+        ]);
         var winText = (typeof data.gg !== 'undefined' ? 
                 [{text: 'Game Over', duration: 1500},
                 {text: data.gg + ' Won', duration: 2500}]
                 : []);
-        var combinedArr = part1.concat(critProfit, part2, winText);
-        processLargeTextArr(combinedArr,function(){
+        stuffToDisplay = stuffToDisplay.concat(winText);
+        processLargeTextArr(stuffToDisplay,function(){
             turnEnding = false;
             if(typeof data.gg !== 'undefined'){
                 setTimeout(function(){

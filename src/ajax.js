@@ -40,6 +40,7 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.lawyerMoney = stuff.winner ? room[gs(m)].money : (room[gs(m)].money -= stuff.lawyerDmg);
         stuff.soldierDamage = informationStuff.soldierAttack[gs(!m)];
         stuff.soldierAttack = informationStuff.soldierAttack[gs(m)];
+        stuff.critSoldier = [ m ? stuff.critSoldier.monsanto : stuff.critSoldier.opposition, m ? stuff.critSoldier.opposition : stuff.critSoldier.monsanto ];
         stuff.soldierMoney = (room[gs(m)].money -= stuff.soldierDamage);
         stuff.profit = stuff.profit[gs(m)];
         stuff.critProfit = stuff.critProfit[gs(m)];
@@ -80,25 +81,14 @@ app.get('/ajax/turn', (req, res, next) => {
             opposition: 1
         };
         //SOLDIER
-        var baseSoldierDmg = {
-            monsanto: 175,
-            opposition: 175
-        };
-        var baseSoldierCritOdds = {
-            monsanto: 5,
-            opposition: 5
-        };
+        informationStuff.critSoldier = {};
         informationStuff.soldierAttack = {};
+        var soldierBaseDmg = 175;
         var soldierDmgVariation = 35;
         //PROFIT
-        var baseProfit = {
-            monsanto: 450,
-            opposition: 450
-        };
-        informationStuff.critProfit = {
-            monsanto: false,
-            opposition: false
-        };
+        var baseProfit = 450;
+        var profitVariation = 50;
+        informationStuff.critProfit = {};
         informationStuff.profit = {};
 
         ////SIDE AGNOSTIC TRAIT PROCESSING////
@@ -114,46 +104,75 @@ app.get('/ajax/turn', (req, res, next) => {
 
         ////TRAIT PROCESSING////
         sides.forEach(function(curSide){
-            console.log(chalk.grey.bold(curSide));
-
-            informationStuff.lawyerDmg = chance.natural({
-                min: baseLawyerDmg - lawyerDmgVariation,
-                max: baseLawyerDmg + lawyerDmgVariation
-            });
+            console.log(chalk.blue.bold(curSide));
 
             //SOLDIER
-            informationStuff.soldierAttack[curSide] = chance.natural({
-                min: baseSoldierDmg[curSide] - soldierDmgVariation,
-                max: baseSoldierDmg[curSide] + soldierDmgVariation
-            });
+            console.log(chalk.blue('processing soldier'));
+            var soldierGenes = room[curSide].people.soldier[0].genes;
+
+            var soldierDmg = genericDmgProcessor(
+                soldierBaseDmg,
+                soldierDmgVariation,
+                {
+                    chance: 5,
+                    dmg: 2.5
+                },
+                [{
+                    type: 'standard',
+                    hasTrait: logic.hasTrait(soldierGenes[0], true),
+                    boost: 0.2
+                },
+                {
+                    type: 'standard',
+                    hasTrait: logic.hasTrait(soldierGenes[1], false),
+                    boost: 0.4
+                },
+                {
+                    type: 'critChance',
+                    hasTrait: logic.hasTrait(soldierGenes[2], false),
+                    boost: 10
+                },
+                {
+                    type: 'critDmg',
+                    hasTrait: logic.hasTrait(soldierGenes[3], false),
+                    boost: 1.5
+                }]);
+            informationStuff.soldierAttack[curSide] = soldierDmg.dmg;
+            informationStuff.critSoldier[curSide] = soldierDmg.crit;
 
             //PROFIT
+            console.log(chalk.blue('processing profit'));
             var profitMultiplier = 1;
             var profitGenes = room[curSide].people.special[0].genes;
-            if(logic.hasTrait(profitGenes[0], true))
-                profitMultiplier += 0.2; 
-            if(logic.hasTrait(profitGenes[1], false))
-                profitMultiplier += 0.4;
-
-            var critOdds = 5;
-            if(logic.hasTrait(profitGenes[2], false))
-                critOdds = 15;
-            
-            if(chance.bool({likelihood: critOdds})){
-                profitMultiplier = logic.hasTrait(profitGenes[3], false) ? 4 : 2.5;
-                informationStuff.critProfit[curSide] = true;
-            }
-
-            console.log(chalk.grey('profit multiplier: ' + profitMultiplier));
-
-            baseProfit[curSide] *= profitMultiplier;
-            console.log(chalk.grey('base profit: ' + baseProfit[curSide]));
-            var profitVariation = 50;
-            informationStuff.profit[curSide] = chance.natural({
-                min: baseProfit[curSide] - profitVariation,
-                max: baseProfit[curSide] + profitVariation
-            });
-            console.log(chalk.grey('final profit: ' + informationStuff.profit[curSide]));
+            var profitDmg = genericDmgProcessor(
+                    baseProfit,
+                    profitVariation,
+                    {
+                        chance: 5,
+                        dmg: 2.5
+                    },
+                    [{
+                        type: 'standard',
+                        hasTrait: logic.hasTrait(profitGenes[0], true),
+                        boost: 0.2
+                    },
+                    {
+                        type: 'standard',
+                        hasTrait: logic.hasTrait(profitGenes[1], false),
+                        boost: 0.4
+                    },
+                    {
+                        type: 'critChance',
+                        hasTrait: logic.hasTrait(profitGenes[2], false),
+                        boost: 10
+                    },
+                    {
+                        type: 'critDmg',
+                        hasTrait: logic.hasTrait(profitGenes[3], false),
+                        boost: 1.5
+                    }]);
+            informationStuff.profit[curSide] = profitDmg.dmg;
+            informationStuff.critProfit[curSide] = profitDmg.crit;
 
             //NEW MATES/SCIENTIST
             pawns.forEach(function(curPawn){
@@ -165,6 +184,54 @@ app.get('/ajax/turn', (req, res, next) => {
                 }
             });
         });
+
+        function genericDmgProcessor(baseDmg, dmgVariation, critData, mainData){
+            var multiplier = 1;
+            var critChance = critData.chance || 0;
+            var critDmg = critData.dmg || 0;
+            var wasCrit = false;
+            mainData.forEach(function(curData){
+                switch(curData.type){
+                    case 'standard' : {
+                        if(curData.hasTrait)
+                        multiplier += curData.boost;
+                        break;
+                    }
+                    case 'critChance' : {
+                        if(curData.hasTrait)
+                            critChance += curData.boost;
+                        break;
+                    }
+                    case 'critDmg' : {
+                        if(curData.hasTrait)
+                            critDmg += curData.boost;
+                        break;
+                    }
+                    default : {
+                        console.error(chalk.red('unknown trait type in genericDmgProcessor: ' + curData.type));
+                        break;
+                    }
+                }
+            });
+            //critical processing
+            console.log(chalk.grey('crit chance: ' + critChance));
+            if(chance.bool({likelihood: critChance})){
+                multiplier = critDmg;
+                wasCrit = true;
+                console.log(chalk.grey('critical'));
+            }
+            //multiply it
+            baseDmg *= multiplier;
+            console.log(chalk.grey('multiplier: ' + multiplier));
+            console.log(chalk.grey('final base dmg: ' + baseDmg));
+            //randomize
+            var finalDmg =  chance.natural({min: baseDmg - dmgVariation, max: baseDmg + dmgVariation});
+            console.log(chalk.grey('final dmg: ' + finalDmg));
+            return {
+                dmg: finalDmg,
+                crit: wasCrit
+            }
+        }
 
         ////FINAL STUFF PROCESSING////
 
