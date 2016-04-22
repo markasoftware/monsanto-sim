@@ -82,9 +82,8 @@ app.post('/init', function(req, res){
                 var namePool = [];
                 genes[curPawnKey] = [];
                 var mainIsMale = chance.bool();
-                for (var k = 0; k < 4; ++k) {
-                    genes[curPawnKey].push(logic.genMate(traits[curPawnKey], (k === 0 ? mainIsMale : !mainIsMale), namePool));
-                }
+                genes[curPawnKey].push(logic.genMate(traits[curPawnKey], mainIsMale, namePool));
+                genes[curPawnKey] = genes[curPawnKey].concat(logic.genMultipleMates(3, traits[curPawnKey], !mainIsMale, namePool));
             });
             return genes;
         }

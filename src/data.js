@@ -6,8 +6,8 @@ module.exports.traits = {
         'lg dmg boost'
     ],
     scientist: [
-        '2 mates (D)',
-        '3 mates',
+        'extra mate (D)',
+        'another mate (D)',
         'sm price hit (D)',
         'lg price hit'
     ],

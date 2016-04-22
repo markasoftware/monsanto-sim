@@ -202,9 +202,8 @@ app.get('/ajax/turn', (req, res, next) => {
                 var namePool = [];
                 var curArr = room[curSide].people[curPawn];
                 curArr.length = 1;
-                for(var r = 0; r < 3; ++r){
-                    curArr.push(logic.genMate(traits[curPawn], !curArr[0].male, namePool));
-                }
+                var newArrThingy = logic.genMultipleMates(room[curSide].people.scientist[0].genes, traits[curPawn], !curArr[0].male, namePool);
+                newArrThingy.forEach((idk) => curArr.push(idk));
             });
         });
 
@@ -257,7 +256,8 @@ app.post('/ajax/buy', function(req, res, next){
     console.log(chalk.grey('room: ' + sess.room));
     console.log(chalk.grey('side: ' + sess.monsanto));
     var reqData = JSON.parse(req.body.json);
-    var pawnPeople = games[sess.room][gs(sess.monsanto)].people[reqData.pawn];
+    var allThePeople = games[sess.room][gs(sess.monsanto)].people;
+    var pawnPeople = allThePeople[reqData.pawn];
     var buyingPerson = pawnPeople[reqData.boughtIndex].genes;
     var mainPawn = pawnPeople[0].genes;
 
@@ -300,9 +300,7 @@ app.post('/ajax/buy', function(req, res, next){
     var namePool = [];
     newGuys[0] = logic.genMate(traits[reqData.pawn], chance.bool(), namePool);
     newGuys[0].genes = newGenes;
-    for(var k = 0; k < 3; ++k){
-        newGuys.push(logic.genMate(traits[reqData.pawn], !newGuys[0].male, namePool));
-    }
+    newGuys = newGuys.concat(logic.genMultipleMates(allThePeople.scientist[0].genes, traits[reqData.pawn], !newGuys[0].male, namePool));
     pawnPeople.length = 0;
     Object.assign(pawnPeople, newGuys);
 

@@ -6,8 +6,9 @@ var traits = data.traits;
 module.exports.gs = (isM) => isM ? 'monsanto' : 'opposition';
 
 module.exports.hasTrait = (traitPair, isDominant) => {
-    return isDominant ? (traitPair[0] || traitPair[1]) : !(traitPair[0] || traitPair[0]);
+    return isDominant ? (traitPair[0] || traitPair[1]) : !(traitPair[0] || traitPair[1]);
 }
+var hasTrait = module.exports.hasTrait;
 
 module.exports.genMate = (traitList, isMale, namePool) => {
     var newName;
@@ -26,7 +27,6 @@ module.exports.genMate = (traitList, isMale, namePool) => {
     });
     return mate;
 }
-
 
 module.exports.genericDmgProcessor = (baseDmg, dmgVariation, critData, mainData) => {
     var multiplier = 1;
@@ -74,4 +74,37 @@ module.exports.genericDmgProcessor = (baseDmg, dmgVariation, critData, mainData)
         dmg: finalDmg,
         crit: wasCrit
     }
+}
+
+module.exports.genMultipleMates = (scienceGenes, traitList, isMale, namePool) => {
+    console.log(chalk.blue('generating multiple mates'));
+    var newM88s = [];
+    var overridden = (typeof scienceGenes === 'number');
+    var numOfMates = overridden ? scienceGenes : 1;
+    if(!overridden){
+        if(hasTrait(scienceGenes[0], true))
+            ++numOfMates;
+        if(hasTrait(scienceGenes[1], true))
+            ++numOfMates;
+    }
+    console.log(chalk.grey('number of mates: ' + numOfMates));
+    for(var k = 0; k < numOfMates; ++k) {
+        var m88 = module.exports.genMate(traitList, isMale, namePool);
+        m88.price = module.exports.genericDmgProcessor(
+                200,
+                50,
+                false,
+                [{
+                    type: 'standard',
+                    hasTrait: overridden ? false : hasTrait(scienceGenes[2], true),
+                    boost: -0.15
+                },
+                {
+                    type: 'standard',
+                    hasTrait: overridden ? false : hasTrait(scienceGenes[3], false),
+                    boost: -0.35
+                }]).dmg;
+        newM88s.push(m88);
+    }
+    return newM88s;
 }
