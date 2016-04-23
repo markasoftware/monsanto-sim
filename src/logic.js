@@ -91,7 +91,7 @@ module.exports.genMultipleMates = (scienceGenes, traitList, isMale, namePool) =>
     for(var k = 0; k < numOfMates; ++k) {
         var m88 = module.exports.genMate(traitList, isMale, namePool);
         m88.price = module.exports.genericDmgProcessor(
-                200,
+                250,
                 50,
                 false,
                 [{

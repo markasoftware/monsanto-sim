@@ -47,10 +47,6 @@ app.get('/ajax/turn', (req, res, next) => {
         stuff.finalMoney = (room[gs(m)].money += stuff.profit);
         stuff.winner = stuff.winner ? 'You' : 'Opponent';
         stuff.newMates = room[gs(m)].people;
-        if(typeof stuff.gg !== 'undefined'){
-            stuff.gg = m ? stuff.gg : !stuff.gg;
-            stuff.gg = stuff.gg ? 'You' : 'Opponent';
-        }
         return stuff;
     }
     if(room.turnOver) {
@@ -83,7 +79,7 @@ app.get('/ajax/turn', (req, res, next) => {
         var soldierBaseDmg = 175;
         var soldierDmgVariation = 35;
         //PROFIT
-        var baseProfit = 450;
+        var baseProfit = 400;
         var profitVariation = 50;
         informationStuff.critProfit = {};
         informationStuff.profit = {};
@@ -138,7 +134,7 @@ app.get('/ajax/turn', (req, res, next) => {
                 soldierDmgVariation,
                 {
                     chance: 5,
-                    dmg: 2.5
+                    dmg: 3
                 },
                 [{
                     type: 'standard',
@@ -148,7 +144,7 @@ app.get('/ajax/turn', (req, res, next) => {
                 {
                     type: 'standard',
                     hasTrait: logic.hasTrait(soldierGenes[1], false),
-                    boost: 0.4
+                    boost: 0.55
                 },
                 {
                     type: 'critChance',
@@ -172,17 +168,17 @@ app.get('/ajax/turn', (req, res, next) => {
                     profitVariation,
                     {
                         chance: 5,
-                        dmg: 2.5
+                        dmg: 1.8
                     },
                     [{
                         type: 'standard',
                         hasTrait: logic.hasTrait(profitGenes[0], true),
-                        boost: 0.2
+                        boost: 0.15
                     },
                     {
                         type: 'standard',
                         hasTrait: logic.hasTrait(profitGenes[1], false),
-                        boost: 0.4
+                        boost: 0.3
                     },
                     {
                         type: 'critChance',
@@ -192,7 +188,7 @@ app.get('/ajax/turn', (req, res, next) => {
                     {
                         type: 'critDmg',
                         hasTrait: logic.hasTrait(profitGenes[3], false),
-                        boost: 1.5
+                        boost: 0.55
                     }]);
             informationStuff.profit[curSide] = profitDmg.dmg;
             informationStuff.critProfit[curSide] = profitDmg.crit;
@@ -217,20 +213,34 @@ app.get('/ajax/turn', (req, res, next) => {
         informationStuff.lawyerDmg = lawyerDmg[gs(informationStuff.winner)];
         console.log(chalk.grey('damage: ' + informationStuff.lawyerDmg));
 
+        var finalStuff = {
+            'monsanto': processStuff(informationStuff, true),
+            'opposition': processStuff(informationStuff, false)
+        };
+
         //GG
-        //not in main part because it needs bools and needs to do drawbreaking
         [true, false].forEach((curSide) => {
             if(room[gs(curSide)].money <= 0){
+                console.log(chalk.blue.italic('GG: less than 0: ' + curSide));
                 //if other person is also bankrupt
                 if(room[gs(!curSide)].money <= 0)
-                    informationStuff.gg = room.monsanto.money > room.opposition.money;
+                    finalStuff[gs(curSide)].gg = room[gs(curSide)].money > room[gs(!curSide)].money;
                 else
-                    informationStuff.gg = !curSide;
+                    finalStuff[gs(curSide)].gg = false;
+                finalStuff[gs(!curSide)].gg = !finalStuff[gs(curSide)].gg;
             }
         });
 
-        room.turnOver(processStuff(informationStuff, !sess.monsanto));
-        res.send(processStuff(informationStuff, sess.monsanto)).end();
+        function processGG(stuff, isM){
+            stuff = JSON.parse(JSON.stringify(stuff));
+            if(typeof stuff.gg !== 'undefined'){
+                stuff.gg = stuff.gg ? 'You' : 'Opponent';
+            }
+            return stuff;
+        }
+
+        room.turnOver(processGG(finalStuff[gs(!sess.monsanto)]));
+        res.send(processGG(finalStuff[gs(sess.monsanto)]));
 
 
         next();
